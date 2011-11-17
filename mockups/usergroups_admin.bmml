@@ -1,0 +1,49 @@
+<mockup version="1.0" skin="sketch" measuredW="678" measuredH="338" mockupW="618" mockupH="318">
+  <controls>
+    <control controlID="0" controlTypeID="com.balsamiq.mockups::BrowserWindow" x="60" y="20" w="618" h="318" measuredW="450" measuredH="400" zOrder="0" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>Usergroups%20-%20Django%20admin%0Ahttp%3A//localhost%3A8000/admin/lizard_security/usergroups/</text>
+      </controlProperties>
+    </control>
+    <control controlID="1" controlTypeID="com.balsamiq.mockups::DataGrid" x="94" y="139" w="550" h="141" measuredW="446" measuredH="130" zOrder="1" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>Name%2C%20Data%20set%2C%20Permission%20group%2C%20Managers%2C%20Members%0AUtrecht%2C%20Utrecht%2C%20View%20FEWS%20data%2C%20Reinout%5CrBastiaan%2C%2024%0AUtrecht%20admins%2C%20Utrecht%2C%20Edit%20FEWS%20data%2C%20Bastiaan%2C%203%0AWaternet%2C%20Waternet%2C%20View%20FEWS%20data%2C%20Reinout%5CrPietje%2C%2024</text>
+      </controlProperties>
+    </control>
+    <control controlID="3" controlTypeID="com.balsamiq.mockups::Button" x="529" y="102" w="-1" h="-1" measuredW="115" measuredH="28" zOrder="2" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>Add%20user%20group</text>
+      </controlProperties>
+    </control>
+    <control controlID="4" controlTypeID="com.balsamiq.mockups::ComboBox" x="228" y="168" w="-1" h="-1" measuredW="79" measuredH="23" zOrder="3" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>Utrecht</text>
+      </controlProperties>
+    </control>
+    <control controlID="5" controlTypeID="com.balsamiq.mockups::ComboBox" x="228" y="206" w="-1" h="-1" measuredW="79" measuredH="23" zOrder="4" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>Utrecht</text>
+      </controlProperties>
+    </control>
+    <control controlID="6" controlTypeID="com.balsamiq.mockups::ComboBox" x="228" y="235" w="-1" h="-1" measuredW="91" measuredH="23" zOrder="5" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>Waternet</text>
+      </controlProperties>
+    </control>
+    <control controlID="7" controlTypeID="com.balsamiq.mockups::ComboBox" x="322" y="169" w="-1" h="-1" measuredW="131" measuredH="23" zOrder="6" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>View%20FEWS%20data</text>
+      </controlProperties>
+    </control>
+    <control controlID="8" controlTypeID="com.balsamiq.mockups::ComboBox" x="321" y="205" w="-1" h="-1" measuredW="127" measuredH="23" zOrder="7" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>Edit%20FEWS%20data</text>
+      </controlProperties>
+    </control>
+    <control controlID="9" controlTypeID="com.balsamiq.mockups::ComboBox" x="319" y="234" w="-1" h="-1" measuredW="131" measuredH="23" zOrder="8" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>View%20FEWS%20data</text>
+      </controlProperties>
+    </control>
+  </controls>
+</mockup>
