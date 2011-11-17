@@ -1,7 +1,7 @@
-Overview
-########
+Documentation of lizard-security
+################################
 
-TODO: Short one-paragraph intro.
+.. include:: ../../README.rst
 
 .. toctree::
    :maxdepth: 2
@@ -10,4 +10,3 @@ TODO: Short one-paragraph intro.
    project
 
 
-.. include:: ../../README.rst
