@@ -4,7 +4,6 @@ version = '0.1dev'
 
 long_description = '\n\n'.join([
     open('README.rst').read(),
-    open('TODO.rst').read(),
     open('CREDITS.rst').read(),
     open('CHANGES.rst').read(),
     ])
@@ -22,7 +21,7 @@ tests_require = [
 
 setup(name='lizard-security',
       version=version,
-      description="TODO",
+      description="Base for user group based security for lizard websites",
       long_description=long_description,
       # Get strings from http://www.python.org/pypi?%3Aaction=list_classifiers
       classifiers=['Programming Language :: Python',
