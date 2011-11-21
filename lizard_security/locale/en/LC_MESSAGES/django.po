@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-11-21 06:48-0600\n"
+"POT-Creation-Date: 2011-11-21 09:07-0600\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,22 +17,38 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: models.py:17 models.py:47
+#: models.py:20 models.py:51
 msgid "name"
 msgstr ""
 
-#: models.py:25
+#: models.py:28
 msgid "Data set"
 msgstr ""
 
-#: models.py:26
+#: models.py:29
 msgid "Data sets"
 msgstr ""
 
 #: models.py:61
+msgid "managers"
+msgstr ""
+
+#: models.py:65
+msgid "members"
+msgstr ""
+
+#: models.py:72
+msgid "Number of members"
+msgstr ""
+
+#: models.py:77
+msgid "Managers"
+msgstr ""
+
+#: models.py:83
 msgid "User group"
 msgstr ""
 
-#: models.py:62
+#: models.py:84
 msgid "User groups"
 msgstr ""

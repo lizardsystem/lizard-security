@@ -58,9 +58,11 @@ class UserGroup(models.Model):
                                          null=True,
                                          blank=True)
     managers = models.ManyToManyField(User,
+                                      verbose_name=_('managers'),
                                       related_name='managed_user_groups',
                                       blank=True)
     members = models.ManyToManyField(User,
+                                     verbose_name=_('members'),
                                      related_name='user_group_memberships',
                                      blank=True)
 
