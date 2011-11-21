@@ -1,8 +1,9 @@
 # (c) Nelen & Schuurmans.  GPL licensed, see LICENSE.txt.
 # -*- coding: utf-8 -*-
+from django.contrib.auth.models import Group
+from django.contrib.auth.models import User
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
-from django.contrib.auth.models import Group
 
 CAN_VIEW_LIZARD_DATA = 'can_view_lizard_data'
 
@@ -26,6 +27,7 @@ class DataSet(models.Model):
     class Meta:
         verbose_name = _('Data set')
         verbose_name_plural = _('Data sets')
+        ordering = ['name']
 
 
 class UserGroup(models.Model):
