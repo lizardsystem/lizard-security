@@ -4,6 +4,8 @@ from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import Group
 
+CAN_VIEW_LIZARD_DATA = 'can_view_lizard_data'
+
 
 class DataSet(models.Model):
     """Grouping of data.
@@ -19,7 +21,7 @@ class DataSet(models.Model):
                             blank=True)
 
     def __unicode__(self):
-        return u'<DataSet %s>' % self.name
+        return self.name
 
     class Meta:
         verbose_name = _('Data set')
@@ -55,11 +57,11 @@ class UserGroup(models.Model):
                                          blank=True)
 
     def __unicode__(self):
-        return u'<UserGroup %s>' % self.name
+        return self.name
 
     class Meta:
         verbose_name = _('User group')
         verbose_name_plural = _('User groups')
         permissions = (
-            ('can_view_lizard_data', 'Can view lizard data'),
+            (CAN_VIEW_LIZARD_DATA, 'Can view lizard data'),
             )
