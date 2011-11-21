@@ -17,6 +17,13 @@ class UserGroupAdmin(admin.ModelAdmin):
     search_fields = ('name', 'data_set__name')
     filter_horizontal = ('managers', 'members')
 
+    def queryset(self, request):
+        """Limit user groups to those you manage."""
+        qs = super(UserGroupAdmin, self).queryset(request)
+        if request.user.is_superuser:
+            return qs
+        return qs.filter(id__in=request.user.managed_user_groups.all())
+
 
 admin.site.register(DataSet, DataSetAdmin)
 admin.site.register(UserGroup, UserGroupAdmin)
