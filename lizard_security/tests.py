@@ -4,10 +4,12 @@
 from django.contrib.admin.sites import AdminSite
 from django.contrib.auth.models import User
 from django.test import TestCase
+from django.test.client import Client
 from mock import Mock
 
 from lizard_security.models import DataSet
 from lizard_security.models import UserGroup
+from lizard_security.models import PermissionMapper
 from lizard_security.admin import UserGroupAdmin
 
 
@@ -83,3 +85,35 @@ class UserGroupTest(TestCase):
         request.user = self.admin1
         # Admin 1 can only see user group 1.
         self.assertEquals(model_admin.queryset(request).count(), 1)
+
+
+class PermissionMapperTest(TestCase):
+
+    def test_smoke(self):
+        permission_mapper = PermissionMapper(name='test')
+        self.assertTrue(permission_mapper)
+        self.assertTrue(unicode(permission_mapper))
+
+
+class AdminInterfaceTests(TestCase):
+
+    def setUp(self):
+        self.admin = User.objects.create_user(
+            'adminadmin',
+            'a@a.nl',
+            'adminadmin')
+        self.admin.save()
+        self.admin.is_superuser = True
+        self.admin.is_staff = True
+        self.admin.save()
+
+    def test_smoke(self):
+        client = Client()
+        self.assertTrue(client.login(username='adminadmin', password='adminadmin'))
+        response = client.get('/admin/lizard_security/dataset/')
+        self.assertEquals(response.status_code, 200)
+        response = client.get('/admin/lizard_security/permissionmapper/')
+        self.assertEquals(response.status_code, 200)
+        response = client.get('/admin/lizard_security/usergroup/')
+        self.assertEquals(response.status_code, 200)
+

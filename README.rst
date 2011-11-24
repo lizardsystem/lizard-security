@@ -58,10 +58,10 @@ permissions or is it a group of users? So here are the terms:
   users. There are two kinds of users inside a group: regular members and
   managers. Managers can add and remove members from the group.
 
-  We can assign user groups to a *permission group* in combination with a link
-  to a *data set*. This means that the user group has the assigned permissions
-  on the data that belongs to that *data set*. This mechanism is
-  lizard-security's core.
+- **Permission mapper**. We can assign *user groups* to a *permission group*
+  in combination with a link to a *data set*. This means that the *user group*
+  has the assigned permissions on the data that belongs to that *data
+  set*. This mechanism is lizard-security's core.
 
 - **Data set**. A data set is a small model in the database. Its important
   property is that other models can have a foreign key to it. This way, those

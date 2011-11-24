@@ -54,6 +54,7 @@ INSTALLED_APPS = [
     'django.contrib.sites',
     ]
 ROOT_URLCONF = 'lizard_security.urls'
+SOUTH_TESTS_MIGRATE = False
 
 USE_I18N = True
 LANGUAGES = (

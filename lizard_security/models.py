@@ -31,32 +31,15 @@ class DataSet(models.Model):
 
 
 class UserGroup(models.Model):
-    """Managed group of users, coupling users with permissions and data sets.
+    """Managed group of users.
 
     A user group has members and managers: managers can add/delete users from
     the user group.
-
-    A user group is linked to both a data set and a permission group, giving
-    its members and managers the linked permission on the linked data set.
-
-    TODO: multiple data sets?
-
-    TODO: no permission group means read access?
-
-    TODO: permissions in addition to permission groups?
-
-    TODO: single permission group OK? Helps a lot in the admin.
 
     """
     name = models.CharField(_('name'),
                             max_length=80,
                             blank=True)
-    data_set = models.ForeignKey(DataSet,
-                                 null=True,
-                                 blank=True)
-    permission_group = models.ForeignKey(Group,
-                                         null=True,
-                                         blank=True)
     managers = models.ManyToManyField(User,
                                       verbose_name=_('managers'),
                                       related_name='managed_user_groups',
@@ -82,6 +65,42 @@ class UserGroup(models.Model):
     class Meta:
         verbose_name = _('User group')
         verbose_name_plural = _('User groups')
+
+
+class PermissionMapper(models.Model):
+    """Three-way mapper from user groups to data sets and permission groups.
+
+    A user group is linked to both a data set and a permission group, giving
+    its members and managers the linked permission on the linked data set.
+
+    TODO: no permission group means read access?
+
+    TODO: permissions in addition to permission groups?
+
+    """
+    name = models.CharField(_('name'),
+                            max_length=80,
+                            blank=True)
+    user_group = models.ForeignKey(UserGroup,
+                                   null=True,
+                                   blank=True)
+    data_set = models.ForeignKey(DataSet,
+                                 null=True,
+                                 blank=True)
+    permission_group = models.ForeignKey(Group,
+                                         null=True,
+                                         blank=True)
+
+    def __unicode__(self):
+        return self.name
+
+    class Meta:
+        verbose_name = _('Permission mapper')
+        verbose_name_plural = _('Permission mappers')
+        ordering = ['user_group', 'name']
         permissions = (
             (CAN_VIEW_LIZARD_DATA, 'Can view lizard data'),
             )
+
+
+
