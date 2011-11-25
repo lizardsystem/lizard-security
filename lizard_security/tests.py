@@ -108,6 +108,7 @@ class AdminInterfaceTests(TestCase):
         self.admin.save()
 
     def test_smoke(self):
+        """Looking as admin at the admin pages should not crash them :-)"""
         client = Client()
         self.assertTrue(client.login(username='adminadmin', password='adminadmin'))
         response = client.get('/admin/lizard_security/dataset/')
@@ -116,4 +117,6 @@ class AdminInterfaceTests(TestCase):
         self.assertEquals(response.status_code, 200)
         response = client.get('/admin/lizard_security/usergroup/')
         self.assertEquals(response.status_code, 200)
+
+
 

@@ -39,6 +39,7 @@ DATABASES = {
     }
 SITE_ID = 1
 INSTALLED_APPS = [
+    'lizard_security.testcontent',
     'lizard_security',
     'lizard_ui',
     'staticfiles',
