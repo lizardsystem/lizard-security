@@ -104,9 +104,20 @@ request object by monkeypatching our filter...:
     >>> len(Content.objects.all())
     4
 
-Also if we're a superuser we can get access to everything.
+Regular user without data set ids:
 
     >>> request = Mock()
+    >>> request.user.is_superuser = False
+    >>> request.data_set_ids = []
+    >>> lizard_security.filters.request = request
+    >>> len(Content.objects.all())
+    3
+
+If we're a superuser we can get access to everything:
+
+    >>> request = Mock()
+    >>> request.user.is_superuser = True
+    >>> request.data_set_ids = []
     >>> lizard_security.filters.request = request
     >>> len(Content.objects.all())
     4

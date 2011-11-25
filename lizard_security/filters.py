@@ -21,10 +21,9 @@ def data_set_filter(model_class):
         return empty_data_set
     if user is not None and user.is_superuser:
         return
-    try:
-        data_set_ids = request.data_set_ids
-    except AttributeError:
+    data_set_ids = getattr(request, 'data_set_ids', None)
+    if data_set_ids:
+        match_with_data_set = Q(data_set__in=data_set_ids)
+        return empty_data_set | match_with_data_set
+    else:
         return empty_data_set
-    match_with_data_set = Q(data_set__in=data_set_ids)
-    return empty_data_set | match_with_data_set
-
