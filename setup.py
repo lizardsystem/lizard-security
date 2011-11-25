@@ -12,6 +12,7 @@ install_requires = [
     'Django',
     'django-extensions',
     'django-nose',
+    'django-tls',
     'lizard-ui >= 3.0',
     'mock',
     'pkginfo',

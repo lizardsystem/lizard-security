@@ -55,6 +55,16 @@ four objects:
     >>> len(Content.objects.all())
     4
 
+
+Basic filtering
+---------------
+
+Enable our data set filter function:
+
+    >>> from lizard_security.filters import data_set_filter
+    >>> from lizard_security import filter_registry
+    >>> filter_registry.register(data_set_filter)
+
 If we attach one of the content objects to a data set, we get only three
 objects back as we don't have a request which could indirectly give us access
 to that data set.
@@ -68,3 +78,41 @@ to that data set.
     3
 
 
+Filtering including request
+---------------------------
+
+We need to know which dataset we've got access to. This can be filtered out of
+our request via our login data via a user group, for instance. But it can also
+be set automatically via some middleware through IP address lookups.
+
+Assumption for now: something set a list of data set ids we're allowed to see
+in the request.
+
+To have the request available on the model layer, we need to use `django-tls
+<http://pypi.python.org/pypi/django-tls>`_. This grabs the request from the
+current thread local if it enabled via middleware. We can however set a
+request object by monkeypatching our filter...:
+
+    >>> import lizard_security.filters
+    >>> orig_request = lizard_security.filters.request
+    >>> from mock import Mock
+    >>> from werkzeug.local import Local
+    >>> request = Mock()
+    >>> request.data_set_ids = [dataset1.id]
+    >>> request.user = None
+    >>> lizard_security.filters.request = request
+    >>> len(Content.objects.all())
+    4
+
+Also if we're a superuser we can get access to everything.
+
+    >>> request = Mock()
+    >>> lizard_security.filters.request = request
+    >>> len(Content.objects.all())
+    4
+
+
+Cleanup
+-------
+
+    >>> lizard_security.filters.request = orig_request

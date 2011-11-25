@@ -67,7 +67,9 @@ MIDDLEWARE_CLASSES = ('django.middleware.common.CommonMiddleware',
                       'django.middleware.locale.LocaleMiddleware',
                       'django.middleware.csrf.CsrfViewMiddleware',
                       'django.contrib.auth.middleware.AuthenticationMiddleware',
-                      'django.contrib.messages.middleware.MessageMiddleware',)
+                      'django.contrib.messages.middleware.MessageMiddleware',
+                      'tls.TLSRequestMiddleware',
+                      )
 
 TEMPLATE_CONTEXT_PROCESSORS = (
     # Default django 1.3 processors.
