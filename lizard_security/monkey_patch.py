@@ -1,7 +1,6 @@
 """Monkey patch for always filtering Django models.
 
-Import this file in your settings.py to ensure it gets to monkey patch Django
-early enough.
+This file is imported in our ``models.py``, which is early enough.
 
 """
 from django.db.models.query import QuerySet
