@@ -92,9 +92,11 @@ class PermissionMapper(models.Model):
                             max_length=80,
                             blank=True)
     user_group = models.ForeignKey(UserGroup,
+                                   related_name='permission_mappers',
                                    null=True,
                                    blank=True)
     data_set = models.ForeignKey(DataSet,
+                                 related_name='permission_mappers',
                                  null=True,
                                  blank=True)
     permission_group = models.ForeignKey(Group,

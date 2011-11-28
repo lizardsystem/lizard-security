@@ -5,12 +5,14 @@ from django.contrib.admin.sites import AdminSite
 from django.contrib.auth.models import User
 from django.test import TestCase
 from django.test.client import Client
+from django.test.client import RequestFactory
 from mock import Mock
 
 from lizard_security.models import DataSet
 from lizard_security.models import UserGroup
 from lizard_security.models import PermissionMapper
 from lizard_security.admin import UserGroupAdmin
+from lizard_security.middleware import SecurityMiddleware
 
 
 class DataSetTest(TestCase):
@@ -86,6 +88,13 @@ class UserGroupTest(TestCase):
         # Admin 1 can only see user group 1.
         self.assertEquals(model_admin.queryset(request).count(), 1)
 
+    def test_manager_is_also_member(self):
+        user_group1 = UserGroup()
+        user_group1.save()
+        user_group1.managers.add(self.admin1)
+        user_group1.save()
+        self.assertEquals(user_group1.members.all()[0], self.admin1)
+
 
 class PermissionMapperTest(TestCase):
 
@@ -119,4 +128,88 @@ class AdminInterfaceTests(TestCase):
         self.assertEquals(response.status_code, 200)
 
 
+class MiddlewareTest(TestCase):
 
+    def setUp(self):
+        self.middleware = SecurityMiddleware()
+        request_factory = RequestFactory()
+        self.request = request_factory.get('/some/url')
+        self.request.session = {}  # Weird that it is needed.
+        self.admin1 = User(email='admin1@example.org', username='admin1')
+        self.admin1.save()
+        self.user1 = User(email='user1@example.org', username='user1')
+        self.user1.save()
+        self.user2 = User(email='user2@example.org', username='user2')
+        self.user2.save()
+        self.user_group1 = UserGroup(name='user_group1')
+        self.user_group1.save()
+        self.user_group2 = UserGroup(name='user_group2')
+        self.user_group2.save()
+        self.data_set1 = DataSet(name='data_set1')
+        self.data_set1.save()
+        self.data_set2 = DataSet(name='data_set2')
+        self.data_set2.save()
+
+    def test_user_groups_for_anonymous(self):
+        self.assertEquals([], self.middleware._user_group_ids(self.request))
+        self.middleware.process_request(self.request)
+        self.assertEquals(self.request.user_group_ids, set([]))
+
+    def test_data_sets_for_anonymous(self):
+        self.assertListEqual([], list(self.middleware._data_sets(self.request)))
+        self.middleware.process_request(self.request)
+        self.assertEquals(self.request.allowed_data_set_ids, set([]))
+
+    def test_user_groups_for_non_member(self):
+        self.request.user = self.user1
+        self.assertListEqual([],
+                             list(self.middleware._user_group_ids(self.request)))
+
+    def test_user_groups_for_member(self):
+        self.request.user = self.user1
+        self.user_group1.members.add(self.user1)
+        self.user_group1.save()
+        self.assertListEqual([self.user_group1.id],
+                             list(self.middleware._user_group_ids(self.request)))
+
+    def test_user_groups_append(self):
+        self.request.user = self.user1
+        self.user_group1.members.add(self.user1)
+        self.user_group1.save()
+        self.request.user_group_ids = set([42])
+        self.middleware.process_request(self.request)
+        self.assertSetEqual(set([42, self.user_group1.id]),
+                            self.request.user_group_ids)
+
+    def test_data_sets_for_non_member(self):
+        self.request.user_group_ids = set([])
+        self.assertListEqual([],
+                             list(self.middleware._data_sets(self.request)))
+
+    def test_data_sets_for_member(self):
+        self.request.user = self.user1
+        self.user_group1.members.add(self.user1)
+        self.user_group1.save()
+        self.permission_mapper1 = PermissionMapper()
+        self.permission_mapper1.save()
+        self.permission_mapper1.user_group = self.user_group1
+        self.permission_mapper1.data_set = self.data_set1
+        self.permission_mapper1.save()
+        self.request.user_group_ids = set([self.user_group1.id])
+        # ^^^ By hand instead of via ._user_group_ids()
+        self.assertSetEqual(set([self.data_set1.id]),
+                            set(self.middleware._data_sets(self.request)))
+
+    def test_data_set_append_plus_user_group_relation(self):
+        self.request.user = self.user1
+        self.user_group1.members.add(self.user1)
+        self.user_group1.save()
+        self.permission_mapper1 = PermissionMapper()
+        self.permission_mapper1.save()
+        self.permission_mapper1.user_group = self.user_group1
+        self.permission_mapper1.data_set = self.data_set1
+        self.permission_mapper1.save()
+        self.request.allowed_data_set_ids = set([42])
+        self.middleware.process_request(self.request)
+        self.assertSetEqual(set([42, self.data_set1.id]),
+                             self.request.allowed_data_set_ids)

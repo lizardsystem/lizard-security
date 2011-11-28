@@ -5,9 +5,8 @@ Security checks that lizard-security provides
 
 Lizard-security provides three kinds of security checks:
 
-- A special model object manager ("``.objects.all()``") filters out objects
-  you're not allowed to see. Or: we hack the default object manager to do the
-  same.
+- We override Django's default model object manager ("``.objects.all()``")
+  and filter out objects you're not allowed to see.
 
 - In the admin site, a special model admin filters objects so that only the
   ones you are allowed to see are visible.
@@ -56,8 +55,8 @@ four objects:
     4
 
 
-Basic filtering
----------------
+Basic filtering through the default Django model manager
+--------------------------------------------------------
 
 Enable our data set filter function:
 
@@ -96,7 +95,6 @@ request object by monkeypatching our filter...:
     >>> import lizard_security.filters
     >>> orig_request = lizard_security.filters.request
     >>> from mock import Mock
-    >>> from werkzeug.local import Local
     >>> request = Mock()
     >>> request.data_set_ids = [dataset1.id]
     >>> request.user = None
