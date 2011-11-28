@@ -68,6 +68,14 @@ class UserGroup(models.Model):
         verbose_name = _('User group')
         verbose_name_plural = _('User groups')
 
+    def save(self, *args, **kwargs):
+        if self.id:
+            members = self.members.all()
+            for manager in self.managers.all():
+                if manager not in members:
+                    self.members.add(manager)
+        super(UserGroup, self).save(*args, **kwargs)
+
 
 class PermissionMapper(models.Model):
     """Three-way mapper from user groups to data sets and permission groups.
