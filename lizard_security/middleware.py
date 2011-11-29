@@ -7,6 +7,10 @@ ALLOWED_DATA_SET_IDS = 'allowed_data_set_ids'
 class SecurityMiddleware(object):
     """Add set of our user groups and accessible data sets to the request.
 
+    Of both user groups and data sets, only the IDs are stored, not the full
+    objects. We'll need to cache them, which is easier with IDs. And most of
+    the time we only need the IDs anyway.
+
     If another middleware already added ``user_group_ids`` or
     ``allowed_data_set_ids`` to the request, those values are only added
     to. So multiple middleware can be used to set user group membership, for
