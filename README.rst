@@ -140,11 +140,11 @@ manager. The replacement does nothing unless we've registered some filters.
 Filters that we register get to modify the query set before anyone sees it. So
 if we call ``Something.objects.all()``, the objects are already filtered.
 
-To enable our own filter::
+By default, our own filter is registered. If needed, the filters can be
+configured in our settings. The default is::
 
-    from lizard_security.filters import data_set_filter
-    from lizard_security import filter_registry
-    filter_registry.register(data_set_filter)
+    LIZARD_SECURITY_FILTERS = [
+        'lizard_security.filters.data_set_filter']
 
 Our ``data_set_filter`` filters models with a ``data_set`` foreign key to
 lizard-security's ``DataSet`` model. It leaves other models alone.

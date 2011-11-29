@@ -32,12 +32,6 @@ four objects:
 Basic filtering through the default Django model manager
 --------------------------------------------------------
 
-Enable our data set filter function:
-
-    >>> from lizard_security.filters import data_set_filter
-    >>> from lizard_security import filter_registry
-    >>> filter_registry.register(data_set_filter)
-
 If we attach one of the content objects to a data set, we get only three
 objects back as we don't have a request which could indirectly give us access
 to that data set.
