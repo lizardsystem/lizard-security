@@ -1,36 +1,10 @@
 .. -*- doctest -*-
 
-Security checks that lizard-security provides
-=============================================
+Filtering Django's .objects.all() results automatically
+=======================================================
 
-Lizard-security provides three kinds of security checks:
-
-- We override Django's default model object manager ("``.objects.all()``")
-  and filter out objects you're not allowed to see.
-
-- In the admin site, a special model admin filters objects so that only the
-  ones you are allowed to see are visible.
-
-- A permission checker ("``has_perm()``") takes into account lizard-security's
-  way of filtering.
-
-
-
-Some things to check:
-
-- perm checker for any permission(group), but that includes our VIEW perm.
-
-- Model filtering (effectively: VIEW perm check). No dataset: outside of our
-  perm checks, so allowed.
-
-- Add setting PERM_DEBUG for extra logging.
-
-- Check the speed! Look at caching!
-
-
-- Dataset as separate implementation? Perhaps fews wants its own mechanism or
-  automatic configured filtering.
-
+We monkey patch Django's default object manager's ``get_query_set()``
+method. Here we test if it works correctly.
 
 Setup
 -----
