@@ -12,6 +12,7 @@ from lizard_security.models import DataSet
 from lizard_security.models import UserGroup
 from lizard_security.models import PermissionMapper
 from lizard_security.admin import UserGroupAdmin
+from lizard_security.admin import UserGroupAdminForm
 from lizard_security.middleware import SecurityMiddleware
 
 
@@ -89,11 +90,12 @@ class UserGroupTest(TestCase):
         self.assertEquals(model_admin.queryset(request).count(), 1)
 
     def test_manager_is_also_member(self):
-        user_group1 = UserGroup()
-        user_group1.save()
-        user_group1.managers.add(self.admin1)
-        user_group1.save()
-        self.assertEquals(user_group1.members.all()[0], self.admin1)
+        form = UserGroupAdminForm()
+        form.cleaned_data = {'managers': [self.admin1],
+                             'members': [self.user1]}
+        form.clean()
+        self.assertListEqual(form.cleaned_data['members'],
+                             [self.user1, self.admin1])
 
 
 class PermissionMapperTest(TestCase):

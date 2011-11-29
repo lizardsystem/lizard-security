@@ -1,4 +1,5 @@
 from django.contrib import admin
+from django.forms import ModelForm
 
 from lizard_security.models import DataSet
 from lizard_security.models import UserGroup
@@ -9,8 +10,21 @@ class DataSetAdmin(admin.ModelAdmin):
     model = DataSet
 
 
+class UserGroupAdminForm(ModelForm):
+    class Meta:
+        model = UserGroup
+
+    def clean(self):
+        """Make sure all managers are also members."""
+        for manager in self.cleaned_data['managers']:
+            if manager not in self.cleaned_data['members']:
+                self.cleaned_data['members'].append(manager)
+        return self.cleaned_data
+
+
 class UserGroupAdmin(admin.ModelAdmin):
     model = UserGroup
+    form = UserGroupAdminForm
     list_display = ('name', 'manager_info', 'number_of_members')
     search_fields = ('name', )
     filter_horizontal = ('managers', 'members')
