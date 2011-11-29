@@ -10,3 +10,7 @@ Task: make list of user groups in the request
 
 Task: make list of datasets we have view permissions for. If data sets are enabled.
 
+
+.. automodule:: lizard_security.middleware
+   :members:
+

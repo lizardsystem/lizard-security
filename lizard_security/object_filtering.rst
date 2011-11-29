@@ -89,7 +89,21 @@ If we're a superuser we can get access to everything:
     4
 
 
-Cleanup
--------
+Test cleanup:
 
     >>> lizard_security.filters.request = orig_request
+
+
+Filter registry
+---------------
+
+.. automodule:: lizard_security.filter_registry
+   :members:
+
+
+Our own data set filter
+-----------------------
+
+.. automodule:: lizard_security.filters
+   :members:
+
