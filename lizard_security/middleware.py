@@ -1,5 +1,8 @@
 from lizard_security.models import DataSet
 
+USER_GROUP_IDS = 'user_group_ids'
+ALLOWED_DATA_SET_IDS = 'allowed_data_set_ids'
+
 
 class SecurityMiddleware(object):
     """Add set of our user groups and accessible data sets to the request.
@@ -11,9 +14,9 @@ class SecurityMiddleware(object):
 
     """
     def process_request(self, request):
-        if not hasattr(request, 'user_group_ids'):
+        if not hasattr(request, USER_GROUP_IDS):
             request.user_group_ids = set()
-        if not hasattr(request, 'allowed_data_set_ids'):
+        if not hasattr(request, ALLOWED_DATA_SET_IDS):
             request.allowed_data_set_ids = set()
         request.user_group_ids = request.user_group_ids.union(
             self._user_group_ids(request))
