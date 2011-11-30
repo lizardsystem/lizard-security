@@ -106,9 +106,23 @@ class PermissionMapperTest(TestCase):
 
     def test_smoke(self):
         permission_mapper = PermissionMapper(name='test')
+        permission_mapper.save()
         self.assertTrue(permission_mapper)
         self.assertTrue(unicode(permission_mapper))
 
+    def test_no_filtering(self):
+        # We have a data_set link, but we don't actually want to be filtered
+        # ourselves as we need to be queried to determin the data_set
+        # access. Chicken-egg problem. (Which only surfaces when debugging,
+        # btw.)
+        data_set1 = DataSet(name='data_set1')
+        data_set1.save()
+        permission_mapper = PermissionMapper(name='test')
+        permission_mapper.save()
+        permission_mapper.data_set = data_set1
+        permission_mapper.save()
+        self.assertListEqual(list(PermissionMapper.objects.all()),
+                             [permission_mapper])
 
 class AdminInterfaceTests(TestCase):
 
