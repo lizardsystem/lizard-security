@@ -54,7 +54,8 @@ INSTALLED_APPS = [
     'django.contrib.gis',
     'django.contrib.sites',
     ]
-ROOT_URLCONF = 'lizard_security.urls'
+ROOT_URLCONF = 'lizard_security.testcontent.urls'
+# ^^^^ THIS IS FOR THE TESTCONTENT.
 SOUTH_TESTS_MIGRATE = False
 
 USE_I18N = True

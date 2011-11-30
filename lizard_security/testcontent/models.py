@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib import admin
 
 from lizard_security.models import DataSet
 
@@ -16,5 +17,13 @@ class Content(models.Model):
     data_set = models.ForeignKey(DataSet,
                                  null=True,
                                  blank=True)
+
     def __unicode__(self):
-        return self.name
+        if self.data_set:
+            data_set_name = self.data_set.name
+        else:
+            data_set_name = 'no data set'
+        return '%s (%s)' % (self.name, data_set_name)
+
+
+admin.site.register(Content)

@@ -1,0 +1,21 @@
+<html>
+  <body>
+    <h1>Debug page</h1>
+    <p>request.user: {{ user }}</p>
+    <h2>Placed upon the request by the middleware</h2>
+    <dl>
+      <dt>You're a member of {{ user_groups|length }} user groups:</dt>
+      <dd>{{ user_groups }}</dd>
+      <dt>Those user groups have links to {{ permission_mappers|length }} permission mappers:</dt>
+      <dd>{{ permission_mappers }}</dd>
+      <dt>{{ data_sets|length }} allowed data sets:</dt>
+      <dd>{{ data_sets }} </dd>
+    </dl>
+    <h2>Content.object.all()</h2>
+    <ul>
+      {% for content in all_content %}
+      <li>{{ content }}</li>
+      {% endfor %}
+    </ul>
+  </body>
+</html>
