@@ -16,9 +16,11 @@ class UserGroupAdminForm(ModelForm):
 
     def clean(self):
         """Make sure all managers are also members."""
+        members = list(self.cleaned_data['members'])
         for manager in self.cleaned_data['managers']:
-            if manager not in self.cleaned_data['members']:
-                self.cleaned_data['members'].append(manager)
+            if manager not in members:
+                members.append(manager)
+        self.cleaned_data['members'] = members
         return self.cleaned_data
 
 
