@@ -1,3 +1,4 @@
+# (c) Nelen & Schuurmans.  GPL licensed, see LICENSE.txt.
 from lizard_security.models import DataSet
 
 USER_GROUP_IDS = 'user_group_ids'

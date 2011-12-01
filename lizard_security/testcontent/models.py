@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib import admin
 
 from lizard_security.models import DataSet
+from lizard_security.admin import SecurityFilteredAdmin
 
 
 class Content(models.Model):
@@ -11,6 +12,7 @@ class Content(models.Model):
     non-lizard-security  models.
 
     """
+    supports_object_permissions = True
     name = models.CharField('name',
                             max_length=80,
                             blank=True)
@@ -26,4 +28,4 @@ class Content(models.Model):
         return '%s (%s)' % (self.name, data_set_name)
 
 
-admin.site.register(Content)
+admin.site.register(Content, SecurityFilteredAdmin)

@@ -159,3 +159,4 @@ Important parts 4: permission handling
 --------------------------------------
 
 TODO: ``has_perm()`` integration.
+

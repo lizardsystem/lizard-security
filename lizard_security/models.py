@@ -39,6 +39,7 @@ class UserGroup(models.Model):
     the user group.
 
     """
+    supports_object_permissions = True
     name = models.CharField(_('name'),
                             max_length=80,
                             blank=True)
@@ -58,7 +59,13 @@ class UserGroup(models.Model):
 
     def manager_info(self):
         """Return comma-separated managers (used for the admin)."""
-        return ', '.join(self.managers.values_list('email', flat=True))
+        managers = []
+        for manager in self.managers.all():
+            text = manager.username
+            if not manager.is_staff:
+                text += ' (NOT STAFF YET)'
+            managers.append(text)
+        return ', '.join(managers)
     manager_info.short_description = _('Managers')
 
     def __unicode__(self):

@@ -7,6 +7,8 @@ from django.conf import settings
 from django.test import TestCase
 from django.test.client import Client
 from django.test.client import RequestFactory
+from django.contrib.auth.models import Group
+from django.contrib.auth.models import Permission
 from mock import Mock
 from mock import patch
 
@@ -18,6 +20,7 @@ from lizard_security.admin import UserGroupAdminForm
 from lizard_security.middleware import SecurityMiddleware
 from lizard_security import filter_registry
 from lizard_security import filters
+from lizard_security.testcontent.models import Content
 
 
 class DataSetTest(TestCase):
@@ -124,6 +127,7 @@ class PermissionMapperTest(TestCase):
         self.assertListEqual(list(PermissionMapper.objects.all()),
                              [permission_mapper])
 
+
 class AdminInterfaceTests(TestCase):
 
     def setUp(self):
@@ -135,6 +139,15 @@ class AdminInterfaceTests(TestCase):
         self.admin.is_superuser = True
         self.admin.is_staff = True
         self.admin.save()
+        self.manager = User.objects.create_user(
+            'managermanager',
+            'a@a.nl',
+            'managermanager')
+        self.manager.save()
+        self.manager.is_staff = True
+        self.manager.save()
+        self.user_group = UserGroup()
+        self.user_group.save()
 
     def test_smoke(self):
         """Looking as admin at the admin pages should not crash them :-)"""
@@ -145,6 +158,45 @@ class AdminInterfaceTests(TestCase):
         response = client.get('/admin/lizard_security/permissionmapper/')
         self.assertEquals(response.status_code, 200)
         response = client.get('/admin/lizard_security/usergroup/')
+        self.assertEquals(response.status_code, 200)
+
+    def test_partial_manager(self):
+        """A manager of just some bits of test content should get in, too."""
+        client = Client()
+        self.assertTrue(client.login(username='managermanager',
+                                     password='managermanager'))
+        response = client.get('/admin/testcontent/content/')
+        # Permission denied as we don't have user group access.
+        self.assertEquals(response.status_code, 403)
+        # Now add content. Still no access.
+        self.user_group.members.add(self.manager)
+        self.user_group.save()
+        self.data_set = DataSet(name='data_set')
+        self.data_set.save()
+        self.permission_mapper = PermissionMapper()
+        self.permission_mapper.save()
+        self.permission_mapper.user_group = self.user_group
+        self.permission_mapper.data_set = self.data_set
+        self.permission_mapper.save()
+        self.content = Content()
+        self.content.save()
+        self.content.data_set = self.data_set
+        self.content.save()
+        response = client.get('/admin/testcontent/content/')
+        self.assertEquals(response.status_code, 403)
+        # Just the right permission on a group that we're not connected to
+        # means nothing.
+        add_permission = Permission.objects.get(codename='change_content')
+        group = Group()
+        group.save()
+        group.permissions.add(add_permission)
+        group.save()
+        response = client.get('/admin/testcontent/content/')
+        self.assertEquals(response.status_code, 403)
+        # With rights via a user group, we ought to have access.
+        self.permission_mapper.permission_group = group
+        self.permission_mapper.save()
+        response = client.get('/admin/testcontent/content/')
         self.assertEquals(response.status_code, 200)
 
 
