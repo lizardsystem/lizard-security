@@ -64,7 +64,7 @@ request object by monkeypatching our filter...:
     >>> orig_request = lizard_security.filters.request
     >>> from mock import Mock
     >>> request = Mock()
-    >>> request.data_set_ids = [dataset1.id]
+    >>> request.allowed_data_set_ids = [dataset1.id]
     >>> request.user = None
     >>> lizard_security.filters.request = request
     >>> len(Content.objects.all())
@@ -74,7 +74,7 @@ Regular user without data set ids:
 
     >>> request = Mock()
     >>> request.user.is_superuser = False
-    >>> request.data_set_ids = []
+    >>> request.allowed_data_set_ids = []
     >>> lizard_security.filters.request = request
     >>> len(Content.objects.all())
     3
@@ -83,7 +83,7 @@ If we're a superuser we can get access to everything:
 
     >>> request = Mock()
     >>> request.user.is_superuser = True
-    >>> request.data_set_ids = []
+    >>> request.allowed_data_set_ids = []
     >>> lizard_security.filters.request = request
     >>> len(Content.objects.all())
     4
