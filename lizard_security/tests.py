@@ -12,14 +12,15 @@ from django.contrib.auth.models import Permission
 from mock import Mock
 from mock import patch
 
-from lizard_security.models import DataSet
-from lizard_security.models import UserGroup
-from lizard_security.models import PermissionMapper
-from lizard_security.admin import UserGroupAdmin
-from lizard_security.admin import UserGroupAdminForm
-from lizard_security.middleware import SecurityMiddleware
 from lizard_security import filter_registry
 from lizard_security import filters
+from lizard_security.admin import UserGroupAdmin
+from lizard_security.admin import UserGroupAdminForm
+from lizard_security.backends import LizardPermissionBackend
+from lizard_security.middleware import SecurityMiddleware
+from lizard_security.models import DataSet
+from lizard_security.models import PermissionMapper
+from lizard_security.models import UserGroup
 from lizard_security.testcontent.models import Content
 
 
@@ -153,6 +154,8 @@ class AdminInterfaceTests(TestCase):
         """Looking as admin at the admin pages should not crash them :-)"""
         client = Client()
         self.assertTrue(client.login(username='adminadmin', password='adminadmin'))
+        response = client.get('/admin/')
+        self.assertEquals(response.status_code, 200)
         response = client.get('/admin/lizard_security/dataset/')
         self.assertEquals(response.status_code, 200)
         response = client.get('/admin/lizard_security/permissionmapper/')
@@ -198,6 +201,37 @@ class AdminInterfaceTests(TestCase):
         self.permission_mapper.save()
         response = client.get('/admin/testcontent/content/')
         self.assertEquals(response.status_code, 200)
+        # We also see something on the main admin page.
+        response = client.get('/admin/')
+        self.assertEquals(response.status_code, 200)
+
+
+class PermissionBackendTest(TestCase):
+
+    def setUp(self):
+        self.backend = LizardPermissionBackend()
+        self.manager = User.objects.create_user(
+            'managermanager',
+            'a@a.nl',
+            'managermanager')
+        self.manager.save()
+        self.manager.is_staff = True
+        self.manager.save()
+        self.user_group = UserGroup()
+        self.user_group.save()
+
+    def test_no_authentication(self):
+        self.assertEquals(None, self.backend.authenticate())
+
+    def test_security_module_perms(self):
+        """Usergroup managers need specific access to our module in de admin.
+        """
+        self.assertFalse(
+            self.backend.has_module_perms(self.manager, 'lizard_security'))
+        self.user_group.managers.add(self.manager)
+        self.user_group.save()
+        self.assertTrue(
+            self.backend.has_module_perms(self.manager, 'lizard_security'))
 
 
 class MiddlewareTest(TestCase):
