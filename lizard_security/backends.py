@@ -63,7 +63,11 @@ class LizardPermissionBackend(object):
                 print "Granting module perms for", app_label
                 return True
         # TODO: grand permission to perms through perm managers.
-        user_group_ids = getattr(request, USER_GROUP_IDS, None)
+        try:
+            user_group_ids = getattr(request, USER_GROUP_IDS, None)
+        except RuntimeError:
+            # No tread-local request object.
+            return False
         if user_group_ids:
             permissions = Permission.objects.filter(
                 group__permissionmapper__user_group__id__in=user_group_ids)
