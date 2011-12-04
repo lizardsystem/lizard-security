@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib import admin
 
+from lizard_security.manager import FilteredManager
 from lizard_security.models import DataSet
 from lizard_security.admin import SecurityFilteredAdmin
 
@@ -19,6 +20,7 @@ class Content(models.Model):
     data_set = models.ForeignKey(DataSet,
                                  null=True,
                                  blank=True)
+    objects = FilteredManager()
 
     def __unicode__(self):
         if self.data_set:
