@@ -54,7 +54,6 @@ class LizardPermissionBackend(object):
             data_set_query = empty_data_set
         relevant_permission_mappers = PermissionMapper.objects.filter(
             user_group_query & data_set_query)
-        print relevant_permission_mappers
         permissions = Permission.objects.filter(
             group__permissionmapper__in=relevant_permission_mappers)
         permissions = [(p.content_type.app_label + '.' + p.codename)
@@ -73,7 +72,6 @@ class LizardPermissionBackend(object):
         if app_label == 'lizard_security':
             # We need to grant access for user group managers.
             if user_obj.managed_user_groups.count():
-                print "Granting module perms for", app_label
                 return True
         # TODO: grand permission to perms through perm managers.
         try:
@@ -86,7 +84,5 @@ class LizardPermissionBackend(object):
                 group__permissionmapper__user_group__id__in=user_group_ids)
             for perm in permissions:
                 if perm.content_type.app_label == app_label:
-                    print "Granting module perms for", app_label
                     return True
-        print "NOT granting module perms for", app_label
         return False
