@@ -12,8 +12,7 @@ from django.contrib.auth.models import Permission
 from mock import Mock
 from mock import patch
 
-from lizard_security import filter_registry
-from lizard_security import filters
+from lizard_security import manager
 from lizard_security.admin import UserGroupAdmin
 from lizard_security.admin import UserGroupAdminForm
 from lizard_security.backends import LizardPermissionBackend
@@ -378,23 +377,3 @@ class MiddlewareTest(TestCase):
         self.middleware.process_request(self.request)
         self.assertSetEqual(set([42, self.data_set1.id]),
                              self.request.allowed_data_set_ids)
-
-
-class FilterRegistryTest(TestCase):
-
-    def test_settings(self):
-        # In our testsettings, no LIZARD_SECURITY_FILTERS is set.
-        self.assertFalse(hasattr(settings, 'LIZARD_SECURITY_FILTERS'))
-
-    def test_filter_functions_default(self):
-        # By default, our filter is registered.
-        self.assertListEqual(filter_registry.filter_functions(),
-                             [filters.data_set_filter])
-
-    def test_filter_functions_corner_case(self):
-        with patch('lizard_security.filter_registry.settings') as settings:
-            filter_registry._filter_functions = None
-            settings.LIZARD_SECURITY_FILTERS = ['no_dots']
-            self.assertListEqual(filter_registry.filter_functions(),
-                                 [])
-            filter_registry._filter_functions = None

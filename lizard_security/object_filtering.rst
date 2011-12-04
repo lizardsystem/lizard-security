@@ -1,10 +1,8 @@
 .. -*- doctest -*-
 
-Filtering Django's .objects.all() results automatically
-=======================================================
+Filtering objects through a custom object manager
+=================================================
 
-We monkey patch Django's default object manager's ``get_query_set()``
-method. Here we test if it works correctly.
 
 Setup
 -----
@@ -29,8 +27,8 @@ four objects:
     4
 
 
-Basic filtering through the default Django model manager
---------------------------------------------------------
+Basic filtering through the custom model manager
+------------------------------------------------
 
 If we attach one of the content objects to a data set, we get only three
 objects back as we don't have a request which could indirectly give us access
@@ -60,13 +58,13 @@ To have the request available on the model layer, we need to use `django-tls
 current thread local if it enabled via middleware. We can however set a
 request object by monkeypatching our filter...:
 
-    >>> import lizard_security.filters
-    >>> orig_request = lizard_security.filters.request
+    >>> import lizard_security.manager
+    >>> orig_request = lizard_security.manager.request
     >>> from mock import Mock
     >>> request = Mock()
     >>> request.allowed_data_set_ids = [dataset1.id]
     >>> request.user = None
-    >>> lizard_security.filters.request = request
+    >>> lizard_security.manager.request = request
     >>> len(Content.objects.all())
     4
 
@@ -75,7 +73,7 @@ Regular user without data set ids:
     >>> request = Mock()
     >>> request.user.is_superuser = False
     >>> request.allowed_data_set_ids = []
-    >>> lizard_security.filters.request = request
+    >>> lizard_security.manager.request = request
     >>> len(Content.objects.all())
     3
 
@@ -84,26 +82,11 @@ If we're a superuser we can get access to everything:
     >>> request = Mock()
     >>> request.user.is_superuser = True
     >>> request.allowed_data_set_ids = []
-    >>> lizard_security.filters.request = request
+    >>> lizard_security.manager.request = request
     >>> len(Content.objects.all())
     4
 
 
 Test cleanup:
 
-    >>> lizard_security.filters.request = orig_request
-
-
-Filter registry
----------------
-
-.. automodule:: lizard_security.filter_registry
-   :members:
-
-
-Our own data set filter
------------------------
-
-.. automodule:: lizard_security.filters
-   :members:
-
+    >>> lizard_security.manager.request = orig_request
