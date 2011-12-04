@@ -158,5 +158,7 @@ lizard-security's ``DataSet`` model. It leaves other models alone.
 Important parts 4: permission handling
 --------------------------------------
 
-TODO: ``has_perm()`` integration.
+Lizard-security does not handle global permissions. By design, it only handles
+object permissions. It has ``has_perm()`` integration, so we can use the
+regular Django permission calls.
 
