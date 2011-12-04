@@ -49,7 +49,8 @@ class LizardPermissionBackend(object):
         user_group_query = Q(user_group__id__in=user_group_ids)
         empty_data_set = Q(data_set=None)
         if allowed_data_set_ids:
-            data_set_query = Q(data_set__in=allowed_data_set_ids) | empty_data_set
+            matching_data_sets = Q(data_set__in=allowed_data_set_ids)
+            data_set_query = matching_data_sets | empty_data_set
         else:
             data_set_query = empty_data_set
         relevant_permission_mappers = PermissionMapper.objects.filter(

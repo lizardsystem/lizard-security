@@ -110,6 +110,3 @@ class PermissionMapper(models.Model):
         permissions = (
             (CAN_VIEW_LIZARD_DATA, 'Can view lizard data'),
             )
-
-
-

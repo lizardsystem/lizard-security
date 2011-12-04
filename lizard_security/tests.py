@@ -3,7 +3,6 @@
 
 from django.contrib.admin.sites import AdminSite
 from django.contrib.auth.models import User
-from django.conf import settings
 from django.test import TestCase
 from django.test.client import Client
 from django.test.client import RequestFactory
@@ -12,7 +11,6 @@ from django.contrib.auth.models import Permission
 from mock import Mock
 from mock import patch
 
-from lizard_security import manager
 from lizard_security.admin import UserGroupAdmin
 from lizard_security.admin import UserGroupAdminForm
 from lizard_security.backends import LizardPermissionBackend
@@ -152,7 +150,8 @@ class AdminInterfaceTests(TestCase):
     def test_smoke(self):
         """Looking as admin at the admin pages should not crash them :-)"""
         client = Client()
-        self.assertTrue(client.login(username='adminadmin', password='adminadmin'))
+        self.assertTrue(client.login(username='adminadmin',
+                                     password='adminadmin'))
         response = client.get('/admin/')
         self.assertEquals(response.status_code, 200)
         response = client.get('/admin/lizard_security/dataset/')
@@ -320,21 +319,25 @@ class MiddlewareTest(TestCase):
         self.assertEquals(self.request.user_group_ids, set([]))
 
     def test_data_sets_for_anonymous(self):
-        self.assertListEqual([], list(self.middleware._data_sets(self.request)))
+        self.assertListEqual(
+            [],
+            list(self.middleware._data_sets(self.request)))
         self.middleware.process_request(self.request)
         self.assertEquals(self.request.allowed_data_set_ids, set([]))
 
     def test_user_groups_for_non_member(self):
         self.request.user = self.user1
-        self.assertListEqual([],
-                             list(self.middleware._user_group_ids(self.request)))
+        self.assertListEqual(
+            [],
+            list(self.middleware._user_group_ids(self.request)))
 
     def test_user_groups_for_member(self):
         self.request.user = self.user1
         self.user_group1.members.add(self.user1)
         self.user_group1.save()
-        self.assertListEqual([self.user_group1.id],
-                             list(self.middleware._user_group_ids(self.request)))
+        self.assertListEqual(
+            [self.user_group1.id],
+            list(self.middleware._user_group_ids(self.request)))
 
     def test_user_groups_append(self):
         self.request.user = self.user1

@@ -2,7 +2,6 @@ from django.db.models.manager import Manager
 from django.db.models import Q
 from tls import request
 
-from lizard_security.models import PermissionMapper
 from lizard_security.middleware import ALLOWED_DATA_SET_IDS
 
 
@@ -39,4 +38,3 @@ class FilteredManager(Manager):
         if extra_filter is not None:
             query_set = query_set.filter(extra_filter)
         return query_set
-

@@ -19,4 +19,3 @@ def overview(request):
         'all_content': Content.objects.all(),
         }
     return render(request, 'testcontent/overview.html', context)
-
