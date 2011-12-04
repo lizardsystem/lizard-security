@@ -70,7 +70,6 @@ class LizardPermissionBackend(object):
         This method is called by Django's admin
 
         """
-        print "searching module perms for", app_label
         if app_label == 'lizard_security':
             # We need to grant access for user group managers.
             if user_obj.managed_user_groups.count():
