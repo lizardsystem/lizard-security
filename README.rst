@@ -24,11 +24,9 @@ websites:
 - **Lizard** also means that it is user friendly and that non-admins can
   configure it.
 
-- **Django** because lizard-security tries to use Django's database models,
-  Django's row level security mechanism, Django's admin filtering, Django's
-  permission infrastructure. A good Django citizen. Oh, and because it `monkey
-  patches <http://en.wikipedia.org/wiki/Monkey_patch>`_ Django's default model
-  manager's ``get_query_set()`` method.
+- **Django** because lizard-security tries to use Django's database model
+  managers, Django's row level security mechanism, Django's admin filtering,
+  Django's permission infrastructure. A good Django citizen.
 
 
 Defining terms
@@ -130,24 +128,12 @@ example setting::
         )
 
 
-Important parts 3: monkey patched default queryset
---------------------------------------------------
+Important parts 3: custom model manager that filters
+----------------------------------------------------
 
-Lizard-security does one rude thing: it replaces (via a so-called "monkey
-patch") the default ``get_query_set()`` method of Django's default model
-manager. The replacement does nothing unless we've registered some filters.
-
-Filters that we register get to modify the query set before anyone sees it. So
-if we call ``Something.objects.all()``, the objects are already filtered.
-
-By default, our own filter is registered. If needed, the filters can be
-configured in our settings. The default is::
-
-    LIZARD_SECURITY_FILTERS = [
-        'lizard_security.filters.data_set_filter']
-
-Our ``data_set_filter`` filters models with a ``data_set`` foreign key to
-lizard-security's ``DataSet`` model. It leaves other models alone.
+Lizard-security provides a custom model manager that does one extra thing: it
+filters models with a ``data_set`` foreign key to lizard-security's
+``DataSet`` model.
 
 - Models with an empty data set are available to all.
 
@@ -161,4 +147,3 @@ Important parts 4: permission handling
 Lizard-security does not handle global permissions. By design, it only handles
 object permissions. It has ``has_perm()`` integration, so we can use the
 regular Django permission calls.
-
