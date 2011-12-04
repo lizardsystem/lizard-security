@@ -147,3 +147,66 @@ Important parts 4: permission handling
 Lizard-security does not handle global permissions. By design, it only handles
 object permissions. It has ``has_perm()`` integration, so we can use the
 regular Django permission calls.
+
+
+Important parts 5: admin middleware
+-----------------------------------
+
+The objects we're allowed to see are already filtered by our custom model
+manager, so the admin middleware doesn't need to filter those.
+
+However, often managers won't have global access to data, but only within
+certain datasets. The admin middleware gives them access to the admin
+interface; Django's default admin only looks at global permissions and we also
+take the *permission mappers* into account.
+
+
+Usage in our project
+---------------------
+
+If we have any app in our project that uses lizard-security, we need to add
+the two middleware classes (SecurityMiddleware and TLSRequestMiddleware) at
+the bottom of ``MIDDLEWARE_CLASSES`` in our ``settings.py``::
+
+    MIDDLEWARE_CLASSES = (
+        'django.middleware.common.CommonMiddleware',
+        'django.contrib.sessions.middleware.SessionMiddleware',
+        'django.middleware.locale.LocaleMiddleware',
+        'django.middleware.csrf.CsrfViewMiddleware',
+        'django.contrib.auth.middleware.AuthenticationMiddleware',
+        'django.contrib.messages.middleware.MessageMiddleware',
+        'lizard_security.middleware.SecurityMiddleware',
+        'tls.TLSRequestMiddleware',
+        )
+
+Any models of ours that we want to protect with lizard-security's *data set*
+mechanism needs four changes:
+
+- A ``data_set`` foreign key is needed to be able to say which *data set* the
+  objects belong to.
+
+- We need to tell Django we support object permissions.
+
+- Lizard-security's special object manager must be set to gain the extra
+  filtering.
+
+- We want to use (or subclass) lizard-security's special admin class.
+
+
+    from django.db import models
+    from django.contrib import admin
+
+    from lizard_security.manager import FilteredManager
+    from lizard_security.models import DataSet
+    from lizard_security.admin import SecurityFilteredAdmin
+
+
+    class Something(models.Model):
+        supports_object_permissions = True
+        data_set = models.ForeignKey(DataSet,
+                                     null=True,
+                                     blank=True)
+        objects = FilteredManager()
+
+
+    admin.site.register(Something, SecurityFilteredAdmin)
