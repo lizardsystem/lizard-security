@@ -56,7 +56,8 @@ in the request.
 To have the request available on the model layer, we need to use `django-tls
 <http://pypi.python.org/pypi/django-tls>`_. This grabs the request from the
 current thread local if it enabled via middleware. We can however set a
-request object by monkeypatching our filter...:
+request object by monkeypatching the request object used by our custom
+manager...:
 
     >>> import lizard_security.manager
     >>> orig_request = lizard_security.manager.request
