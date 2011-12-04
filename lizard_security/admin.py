@@ -53,7 +53,6 @@ class PermissionMapperAdmin(admin.ModelAdmin):
 class SecurityFilteredAdmin(admin.ModelAdmin):
 
     def available_permissions(self):
-        tls_request
         user_group_ids = getattr(tls_request, USER_GROUP_IDS, None)
         if user_group_ids:
             permissions = Permission.objects.filter(

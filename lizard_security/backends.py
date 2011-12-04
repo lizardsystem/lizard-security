@@ -1,9 +1,12 @@
 # (c) Nelen & Schuurmans.  GPL licensed, see LICENSE.txt
 # -*- coding: utf-8 -*-
 from django.contrib.auth.models import Permission
+from django.db.models import Q
 from tls import request
 
+from lizard_security.middleware import ALLOWED_DATA_SET_IDS
 from lizard_security.middleware import USER_GROUP_IDS
+from lizard_security.models import PermissionMapper
 
 
 class LizardPermissionBackend(object):
@@ -24,28 +27,39 @@ class LizardPermissionBackend(object):
         pass
 
     def has_perm(self, user, perm, obj=None):
-        """Check if obj is public or if we've got extra rights to the program.
+        """Return if we have a permission through a permission manager.
+
+        Note: ``perm`` is a string like ``'testcontent.change_content'``, not
+        a Permission object.
+
+        We don't look at a user, just at user group membership. Our middleware
+        translated logged in users to user group membership already.
+
         """
-        # if perm not in [CAN_VIEW_MEASURE, CAN_VIEW_PROGRAMFILE]:
-        #     return False
         if obj is None:
-            # Check via usergroup.
-            return
-        print "--- Quering perm %s for obj %s" % (perm, obj)
-        # if not (isinstance(obj, Measure) or isinstance(obj, ProgramFile)):
-        #     # We just deal with measures and program files.
-        #     return False
-        # if user.is_authenticated():
-        #     if isinstance(obj, Measure):
-        #         # We can access private measures if we can access at least one
-        #         # program. It does *not* need to be the measure's program.
-        #         has_access_to_any_program = user.profile.programs.exists()
-        #         return has_access_to_any_program
-        #     if isinstance(obj, ProgramFile):
-        #         # We can access private programfiles only if we have access to
-        #         # exactly that program.
-        #         return obj.program in user.profile.programs.all()
-        return False
+            # We' interested in a global permissions by definition. We only
+            # deal with object-level permissions.
+            return False
+        try:
+            user_group_ids = getattr(request, USER_GROUP_IDS, None)
+            allowed_data_set_ids = getattr(request, ALLOWED_DATA_SET_IDS, None)
+        except RuntimeError:
+            # No tread-local request object.
+            return False
+        user_group_query = Q(user_group__id__in=user_group_ids)
+        empty_data_set = Q(data_set=None)
+        if allowed_data_set_ids:
+            data_set_query = Q(data_set__in=allowed_data_set_ids) | empty_data_set
+        else:
+            data_set_query = empty_data_set
+        relevant_permission_mappers = PermissionMapper.objects.filter(
+            user_group_query & data_set_query)
+        print relevant_permission_mappers
+        permissions = Permission.objects.filter(
+            group__permissionmapper__in=relevant_permission_mappers)
+        permissions = [(p.content_type.app_label + '.' + p.codename)
+                       for p in permissions]
+        return perm in permissions
 
     def has_module_perms(self, user_obj, app_label):
         """Return True if user_obj has any permissions in the given app_label.

@@ -219,6 +219,21 @@ class PermissionBackendTest(TestCase):
         self.manager.save()
         self.user_group = UserGroup()
         self.user_group.save()
+        self.data_set = DataSet(name='data_set')
+        self.data_set.save()
+        self.content = Content()
+        self.content.save()
+        self.content.data_set = self.data_set
+        self.content.save()
+        self.permission_mapper = PermissionMapper()
+        self.permission_mapper.save()
+        self.permission_mapper.user_group = self.user_group
+        self.permission_mapper.data_set = self.data_set
+        self.permission_mapper.save()
+        self.content = Content()
+        self.content.save()
+        self.content.data_set = self.data_set
+        self.content.save()
 
     def test_no_authentication(self):
         self.assertEquals(None, self.backend.authenticate())
@@ -232,6 +247,50 @@ class PermissionBackendTest(TestCase):
         self.user_group.save()
         self.assertTrue(
             self.backend.has_module_perms(self.manager, 'lizard_security'))
+
+    def test_has_perm_only_objects(self):
+        self.assertFalse(self.backend.has_perm('dont care', 'none.can_exist'))
+
+    def test_has_perm(self):
+        add_permission = Permission.objects.get(codename='change_content')
+        group = Group()
+        group.save()
+        group.permissions.add(add_permission)
+        group.save()
+        self.permission_mapper.permission_group = group
+        self.permission_mapper.save()
+        self.assertFalse(self.backend.has_perm(
+                self.manager, 'testcontent.change_content', self.content))
+        # If we belong to the right group, we *do* have access.
+        with patch('lizard_security.backends.request') as request:
+            request.user_group_ids = [self.user_group.id]
+            request.allowed_data_set_ids = [self.data_set.id]
+            self.assertTrue(self.backend.has_perm(
+                    self.manager, 'testcontent.change_content', self.content))
+
+    def test_has_perm_with_unset_dataset(self):
+        # And now without a dataset.
+        add_permission = Permission.objects.get(codename='change_content')
+        group = Group()
+        group.save()
+        group.permissions.add(add_permission)
+        group.save()
+        self.permission_mapper.permission_group = group
+        self.permission_mapper.save()
+        self.permission_mapper.data_set = None
+        self.permission_mapper.save()
+        self.content = Content()
+        self.content.save()
+        self.content.data_set = None
+        self.content.save()
+        self.assertFalse(self.backend.has_perm(
+                self.manager, 'testcontent.change_content', self.content))
+        # If we belong to the right group, we *do* have access.
+        with patch('lizard_security.backends.request') as request:
+            request.user_group_ids = [self.user_group.id]
+            request.allowed_data_set_ids = []
+            self.assertTrue(self.backend.has_perm(
+                    self.manager, 'testcontent.change_content', self.content))
 
 
 class MiddlewareTest(TestCase):
