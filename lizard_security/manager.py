@@ -1,3 +1,4 @@
+from django.db.models.manager import Manager
 from django.db.models import Q
 from tls import request
 
@@ -33,3 +34,16 @@ def data_set_filter(model_class):
         return empty_data_set | match_with_data_set
     else:
         return empty_data_set
+
+
+class FilteredManager(Manager):
+
+    def get_query_set(self):
+        """Return base queryset (with lizard-security filtering if relevant).
+        """
+        query_set = super(FilteredManager, self).get_query_set()
+        extra_filter = data_set_filter(self.model)
+        if extra_filter is not None:
+            query_set = query_set.filter(extra_filter)
+        return query_set
+
