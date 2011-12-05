@@ -7,6 +7,9 @@ from tls import request
 from lizard_security.middleware import ALLOWED_DATA_SET_IDS
 from lizard_security.middleware import USER_GROUP_IDS
 from lizard_security.models import PermissionMapper
+from lizard_security.models import CAN_VIEW_LIZARD_DATA
+
+VIEW_PERMISSION = 'lizard_security.' + CAN_VIEW_LIZARD_DATA.replace(' ', '_')
 
 
 class LizardPermissionBackend(object):
@@ -55,11 +58,17 @@ class LizardPermissionBackend(object):
             data_set_query = empty_data_set
         relevant_permission_mappers = PermissionMapper.objects.filter(
             user_group_query & data_set_query)
-        permissions = Permission.objects.filter(
-            group__permissionmapper__in=relevant_permission_mappers)
-        permissions = [(p.content_type.app_label + '.' + p.codename)
-                       for p in permissions]
-        return perm in permissions
+        if perm == VIEW_PERMISSION:
+            # We have *some* permission on the object, so by design we have
+            # the implicit view permission, too.
+            return True
+        else:
+            # We need to check whether we have the specific permission.
+            permissions = Permission.objects.filter(
+                group__permissionmapper__in=relevant_permission_mappers)
+            permissions = [(p.content_type.app_label + '.' + p.codename)
+                           for p in permissions]
+            return perm in permissions
 
     def has_module_perms(self, user_obj, app_label):
         """Return True if user_obj has any permissions in the given app_label.

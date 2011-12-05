@@ -148,6 +148,10 @@ Lizard-security does not handle global permissions. By design, it only handles
 object permissions. It has ``has_perm()`` integration, so we can use the
 regular Django permission calls.
 
+If we only want to know if we can access an object, we can use
+lizard-security's view permission to ask for that
+``lizard_security.can_view_lizard_data``.
+
 
 Important parts 5: admin middleware
 -----------------------------------
@@ -192,6 +196,7 @@ mechanism needs four changes:
 
 - We want to use (or subclass) lizard-security's special admin class.
 
+Here's an example illustrating it::
 
     from django.db import models
     from django.contrib import admin

@@ -266,6 +266,15 @@ class PermissionBackendTest(TestCase):
             self.assertTrue(self.backend.has_perm(
                     self.manager, 'testcontent.change_content', self.content))
 
+    def test_has_perm_with_implicit_view_perm(self):
+        with patch('lizard_security.backends.request') as request:
+            request.user_group_ids = [self.user_group.id]
+            request.allowed_data_set_ids = [self.data_set.id]
+            self.assertTrue(self.backend.has_perm(
+                    self.manager,
+                    'lizard_security.can_view_lizard_data',
+                    self.content))
+
     def test_has_perm_with_unset_dataset(self):
         # And now without a dataset.
         add_permission = Permission.objects.get(codename='change_content')
