@@ -5,7 +5,7 @@ Changelog of lizard-security
 0.2 (unreleased)
 ----------------
 
-- Nothing changed yet.
+- Added missing translations.
 
 
 0.1 (2011-12-05)
