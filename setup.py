@@ -15,6 +15,7 @@ install_requires = [
     'django-tls',
     'mock',
     'pkginfo',
+    'south',
     ],
 
 tests_require = [

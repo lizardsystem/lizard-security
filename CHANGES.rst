@@ -5,7 +5,9 @@ Changelog of lizard-security
 0.3 (unreleased)
 ----------------
 
-- Nothing changed yet.
+- Added south dependency.
+
+- Removed traces of lizard_ui which is no dependency.
 
 
 0.2 (2011-12-05)
