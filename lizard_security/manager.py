@@ -1,3 +1,11 @@
+# (c) Nelen & Schuurmans.  GPL licensed, see LICENSE.txt
+# -*- coding: utf-8 -*-
+"""
+To securely filter our objects we don't have access to, we use a custom Django
+object manager: ``FilteredManager``. We have to set that object manager on our
+models.
+
+"""
 from django.db.models.manager import Manager
 from django.db.models import Q
 from tls import request
@@ -29,9 +37,11 @@ def data_set_filter(model_class):
 
 
 class FilteredManager(Manager):
+    """Custom manager that filters out objects whose data set we can't access.
+    """
 
     def get_query_set(self):
-        """Return base queryset (with lizard-security filtering if relevant).
+        """Return base queryset, filtered through lizard-security's mechanism.
         """
         query_set = super(FilteredManager, self).get_query_set()
         extra_filter = data_set_filter(self.model)
