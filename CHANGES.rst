@@ -2,7 +2,7 @@ Changelog of lizard-security
 ===================================================
 
 
-0.1 (unreleased)
+0.1 (2011-12-05)
 ----------------
 
 - 100% test coverage.
