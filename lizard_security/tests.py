@@ -82,7 +82,6 @@ class UserGroupTest(TestCase):
         self.admin1.save()
         self.assertNotIn('NO GLOBAL PERM', user_group.manager_info())
 
-
     def test_admin_filtering(self):
         user_group1 = UserGroup()
         user_group1.save()
