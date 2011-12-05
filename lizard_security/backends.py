@@ -9,7 +9,7 @@ from lizard_security.middleware import USER_GROUP_IDS
 from lizard_security.models import PermissionMapper
 from lizard_security.models import CAN_VIEW_LIZARD_DATA
 
-VIEW_PERMISSION = 'lizard_security.' + CAN_VIEW_LIZARD_DATA.replace(' ', '_')
+VIEW_PERMISSION = 'lizard_security.' + CAN_VIEW_LIZARD_DATA
 
 
 class LizardPermissionBackend(object):
