@@ -1,5 +1,11 @@
 # (c) Nelen & Schuurmans.  GPL licensed, see LICENSE.txt
 # -*- coding: utf-8 -*-
+"""
+Lizard-security provides its own `authentication backend
+<https://docs.djangoproject.com/en/dev/topics/auth/>`_ for checking
+permissions.
+
+"""
 from django.contrib.auth.models import Permission
 from django.db.models import Q
 from tls import request
@@ -19,14 +25,7 @@ class LizardPermissionBackend(object):
     supports_anonymous_user = True
 
     def authenticate(self):
-        """Nope, we don't want to authenticate.
-
-        Basic test:
-
-          >>> lpb = LizardPermissionBackend()
-          >>> lpb.authenticate()
-
-        """
+        """Nope, we don't handle authentication."""
         pass
 
     def has_perm(self, user, perm, obj=None):
@@ -83,7 +82,6 @@ class LizardPermissionBackend(object):
             # We need to grant access for user group managers.
             if user_obj.managed_user_groups.count():
                 return True
-        # TODO: grand permission to perms through perm managers.
         try:
             user_group_ids = getattr(request, USER_GROUP_IDS, None)
         except RuntimeError:
