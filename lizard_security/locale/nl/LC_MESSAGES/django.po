@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-11-21 09:07-0600\n"
+"POT-Creation-Date: 2011-12-05 06:39-0600\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,38 +18,46 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
 
-#: models.py:20 models.py:51
+#: models.py:28 models.py:49 models.py:107
 msgid "name"
 msgstr "naam"
 
-#: models.py:28
+#: models.py:36
 msgid "Data set"
 msgstr "Dataset"
 
-#: models.py:29
+#: models.py:37
 msgid "Data sets"
 msgstr "Datasets"
 
-#: models.py:61
+#: models.py:53
 msgid "managers"
 msgstr "beheerders"
 
-#: models.py:65
+#: models.py:57
 msgid "members"
 msgstr "leden"
 
-#: models.py:72
+#: models.py:64
 msgid "Number of members"
 msgstr "Aantal leden"
 
-#: models.py:77
+#: models.py:84
 msgid "Managers"
 msgstr "Beheerders"
 
-#: models.py:83
+#: models.py:90
 msgid "User group"
 msgstr "Groep gebruikers"
 
-#: models.py:84
+#: models.py:91
 msgid "User groups"
 msgstr "Groepen gebruikers"
+
+#: models.py:126
+msgid "Permission mapper"
+msgstr "Permissiekoppeling"
+
+#: models.py:127
+msgid "Permission mappers"
+msgstr "Permissiekoppelingen"
