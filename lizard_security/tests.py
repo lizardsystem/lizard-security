@@ -68,10 +68,20 @@ class UserGroupTest(TestCase):
         user_group = UserGroup()
         user_group.save()
         user_group.managers.add(self.admin1)
-        user_group.managers.add(self.admin2)
         user_group.save()
-        self.assertTrue('admin1' in user_group.manager_info())
-        self.assertTrue('admin2' in user_group.manager_info())
+        self.assertIn('admin1', user_group.manager_info())
+        self.assertNotIn('admin2', user_group.manager_info())
+        self.assertIn('NOT STAFF YET', user_group.manager_info())
+        self.admin1.is_staff = True
+        self.admin1.save()
+        self.assertNotIn('NOT STAFF YET', user_group.manager_info())
+        self.assertIn('NO GLOBAL PERM', user_group.manager_info())
+        self.admin1.is_staff = True
+        change_permission = Permission.objects.get(codename='change_usergroup')
+        self.admin1.user_permissions.add(change_permission)
+        self.admin1.save()
+        self.assertNotIn('NO GLOBAL PERM', user_group.manager_info())
+
 
     def test_admin_filtering(self):
         user_group1 = UserGroup()

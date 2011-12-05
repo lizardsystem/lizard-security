@@ -1,5 +1,15 @@
 # (c) Nelen & Schuurmans.  GPL licensed, see LICENSE.txt.
 # -*- coding: utf-8 -*-
+"""
+Lizard-security's main mechanism works through data sets, user groups and
+permission mappers. These are all objects in the database, allowing management
+of the security mechanism through Django's admin.
+
+That is, until you start doing weird things in middleware like setting data
+set ids based on IP numbers. Until then, everything works through the models
+in this file.
+
+"""
 from django.contrib.auth.models import Group
 from django.contrib.auth.models import User
 from django.db import models
@@ -13,8 +23,6 @@ class DataSet(models.Model):
 
     Other models can have a foreign key to DataSet to indicate they're part of
     this data set.
-
-    TODO: hierarchy?
 
     """
     name = models.CharField(_('name'),
@@ -56,12 +64,21 @@ class UserGroup(models.Model):
     number_of_members.short_description = _('Number of members')
 
     def manager_info(self):
-        """Return comma-separated managers (used for the admin)."""
+        """Return comma-separated managers (used for the admin).
+
+        Managers need to be staff members and need to have the global
+        permission to manage user groups. If that is not the case, we include
+        a warning after the username.
+
+        """
         managers = []
         for manager in self.managers.all():
             text = manager.username
             if not manager.is_staff:
                 text += ' (NOT STAFF YET)'
+            if not manager.has_perm(
+                'lizard_security.change_usergroup'):
+                text += ' (NO GLOBAL PERM TO CHANGE USERGROUP YET)'
             managers.append(text)
         return ', '.join(managers)
     manager_info.short_description = _('Managers')
@@ -80,9 +97,11 @@ class PermissionMapper(models.Model):
     A user group is linked to both a data set and a permission group, giving
     its members and managers the linked permission on the linked data set.
 
-    TODO: no permission group means read access?
-
-    TODO: permissions in addition to permission groups?
+    Whether we do or do not link to a permission group: a permission mapper
+    from a user group to a data set always means an implicit view
+    permission. So it is OK not to set a permission group: what that means is
+    that we want to grant the view permission to that data set/user group
+    combination.
 
     """
     name = models.CharField(_('name'),
