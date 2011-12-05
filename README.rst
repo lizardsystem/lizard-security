@@ -152,6 +152,14 @@ If we only want to know if we can access an object, we can use
 lizard-security's view permission to ask for that
 ``lizard_security.can_view_lizard_data``.
 
+The permission handling is done by an authentication backend; which must be
+enabled in our settings::
+
+    AUTHENTICATION_BACKENDS = (
+        'django.contrib.auth.backends.ModelBackend',
+        'lizard_security.backends.LizardPermissionBackend',)
+
+
 
 Important parts 5: admin middleware
 -----------------------------------
@@ -182,6 +190,13 @@ the bottom of ``MIDDLEWARE_CLASSES`` in our ``settings.py``::
         'lizard_security.middleware.SecurityMiddleware',
         'tls.TLSRequestMiddleware',
         )
+
+Lizard-security's permission backend needs to be enabled in our
+``settings.py``::
+
+    AUTHENTICATION_BACKENDS = (
+        'django.contrib.auth.backends.ModelBackend',
+        'lizard_security.backends.LizardPermissionBackend',)
 
 Any models of ours that we want to protect with lizard-security's *data set*
 mechanism needs four changes:
@@ -215,3 +230,22 @@ Here's an example illustrating it::
 
 
     admin.site.register(Something, SecurityFilteredAdmin)
+
+
+Development on lizard-security
+------------------------------
+
+Lizard-security must be solid as a rock. Therefore I've kept the **code
+coverage at 100%**. If you develop on lizard-security, **keep** the coverage
+at 100%.
+
+We need to be quite conservative at adding features or conrner case tweaks. If
+you add one: do it in a branch. We're using Git for a reason.
+
+Lizard-security is available `on github
+<https://github.com/lizardsystem/lizard-security>`_. This is also where you
+can `report bugs or suggestions
+<https://github.com/lizardsystem/lizard-security/issues>`_.
+
+The documentation is online at
+http://doc.lizardsystem.nl/libs/lizard-security/ .
