@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib import admin
 
 from lizard_security.manager import FilteredManager
+from lizard_security.manager import FilteredGeoManager
 from lizard_security.models import DataSet
 from lizard_security.admin import SecurityFilteredAdmin
 
@@ -21,6 +22,9 @@ class Content(models.Model):
                                  null=True,
                                  blank=True)
     objects = FilteredManager()
+    # Geo_objects is a manager just for testing the geo filtered
+    # manager, you never need two managers!
+    geo_objects = FilteredGeoManager()
 
     def __unicode__(self):
         if self.data_set:

@@ -398,3 +398,9 @@ class MiddlewareTest(TestCase):
         self.middleware.process_request(self.request)
         self.assertSetEqual(set([42, self.data_set1.id]),
                              self.request.allowed_data_set_ids)
+
+
+class FilteredGeoManagerTest(TestCase):
+
+    def test_manager(self):
+        self.assertEquals(len(Content.geo_objects.all()), 0)

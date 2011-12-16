@@ -30,9 +30,9 @@ four objects:
 Basic filtering through the custom model manager
 ------------------------------------------------
 
-If we attach one of the content objects to a data set, we get only three
+If we attach one of the content objects to a data set, we get all four
 objects back as we don't have a request which could indirectly give us access
-to that data set.
+to that data set to dump and load data from command line.
 
     >>> from lizard_security.models import DataSet
     >>> dataset1 = DataSet(name='dataset1')
@@ -40,7 +40,7 @@ to that data set.
     >>> content1.data_set = dataset1
     >>> content1.save()
     >>> len(Content.objects.all())
-    3
+    4
 
 
 Filtering including request
