@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.gis.db import models as geo_models
 from django.contrib import admin
 
 from lizard_security.manager import FilteredManager
@@ -22,9 +23,33 @@ class Content(models.Model):
                                  null=True,
                                  blank=True)
     objects = FilteredManager()
-    # Geo_objects is a manager just for testing the geo filtered
-    # manager, you never need two managers!
-    geo_objects = FilteredGeoManager()
+
+    def __unicode__(self):
+        if self.data_set:
+            data_set_name = self.data_set.name
+        else:
+            data_set_name = 'no data set'
+        return '%s (%s)' % (self.name, data_set_name)
+
+
+class GeoContent(geo_models.Model):
+    """Test geo content.
+
+    Just for testing lizard-security's interoperability with
+    non-lizard-security  models.
+
+    """
+    supports_object_permissions = True
+    name = geo_models.CharField('name',
+                                max_length=80,
+                                blank=True)
+    data_set = geo_models.ForeignKey(DataSet,
+                                 null=True,
+                                 blank=True)
+    geometry = geo_models.GeometryField(srid=4326,
+                                        null=True,
+                                        blank=True)
+    objects = FilteredGeoManager()
 
     def __unicode__(self):
         if self.data_set:
@@ -35,3 +60,4 @@ class Content(models.Model):
 
 
 admin.site.register(Content, SecurityFilteredAdmin)
+admin.site.register(GeoContent, SecurityFilteredAdmin)

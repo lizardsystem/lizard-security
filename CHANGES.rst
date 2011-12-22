@@ -7,6 +7,8 @@ Changelog of lizard-security
 
 - Added FilteredGeoObject manager.
 
+- Added spatialite db for tests.
+
 
 0.3 (2011-12-05)
 ----------------

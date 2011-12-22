@@ -207,7 +207,8 @@ mechanism needs four changes:
 - We need to tell Django we support object permissions.
 
 - Lizard-security's special object manager must be set to gain the extra
-  filtering.
+  filtering (for using geo object manager in combination with lizard-security
+  use FilteredGeoManager)
 
 - We want to use (or subclass) lizard-security's special admin class.
 

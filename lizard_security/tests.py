@@ -19,6 +19,8 @@ from lizard_security.models import DataSet
 from lizard_security.models import PermissionMapper
 from lizard_security.models import UserGroup
 from lizard_security.testcontent.models import Content
+from lizard_security.testcontent.models import GeoContent
+from lizard_security import manager as geo_manager
 
 
 class DataSetTest(TestCase):
@@ -402,5 +404,45 @@ class MiddlewareTest(TestCase):
 
 class FilteredGeoManagerTest(TestCase):
 
-    def test_manager(self):
-        self.assertEquals(len(Content.geo_objects.all()), 0)
+    def setUp(self):
+        self.middleware = SecurityMiddleware()
+        request_factory = RequestFactory()
+        self.request = request_factory.get('/some/url')
+        self.user = User.objects.create_user(
+            'useruser',
+            'u@u.nl',
+            'useruser')
+        self.user.save()
+        self.user_group = UserGroup(name='user_group')
+        self.user_group.save()
+        self.user_group.members.add(self.user)
+        self.user_group.save()
+        self.data_set1 = DataSet(name='data_set10')
+        self.data_set1.save()
+        self.data_set2 = DataSet(name='data_set20')
+        self.data_set2.save()
+        self.permission_mapper = PermissionMapper()
+        self.permission_mapper.save()
+        self.permission_mapper.user_group = self.user_group
+        self.permission_mapper.data_set = self.data_set1
+        self.permission_mapper.save()
+        self.geo_content1 = GeoContent()
+        self.geo_content1.save()
+        self.geo_content1.data_set = self.data_set1
+        self.geo_content1.save()
+        self.geo_content2 = GeoContent()
+        self.geo_content2.save()
+        self.geo_content2.data_set = self.data_set2
+        self.geo_content2.save()
+        self.geo_content3 = GeoContent()
+        self.geo_content3.save()
+        self.geo_content3.data_set = None
+        self.geo_content3.save()
+
+    def test_geo_manager(self):
+        request = Mock()
+        request.user = self.user
+        request.allowed_data_set_ids = set([self.data_set1.id])
+        print request.allowed_data_set_ids
+        geo_manager.request = request
+        self.assertEqual(len(GeoContent.objects.all()), 2)
