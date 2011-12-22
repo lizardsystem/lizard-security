@@ -2,7 +2,7 @@ Changelog of lizard-security
 ===================================================
 
 
-0.4 (unreleased)
+0.4 (2011-12-22)
 ----------------
 
 - Added FilteredGeoObject manager.
