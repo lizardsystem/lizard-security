@@ -232,6 +232,44 @@ Here's an example illustrating it::
 
     admin.site.register(Something, SecurityFilteredAdmin)
 
+Example usage of the filtered Something::
+
+- Add a permission group (Auth.Group) named "edit-something" and add permissions
+  add, change, delete of the model Something.
+
+- Add a user "editor" (Auth.User) and make sure the checkbox "staff"
+  is checked. With the staff status you can log in to the admin
+  interface with this user.
+
+- Make a data set (lizard_security.DataSet), named "Editable".
+
+- Make a user group (lizard_security.UserGroup), named "all editors"
+  and add "editor" to the list of managers.
+
+- Make an entry in the permission mapper
+  (lizard_security.PermissionMapper) for the user group "all editors",
+  the data set "Editable", the permission group "edit-something" and
+  give it the name "Something Editable".
+
+Results if you log in as editor::
+
+- A call to Something.objects.all() will return all objects where data
+  set is "Editable" and where no data set is defined. Note that if you
+  empty the permission group "edit-something", you will still get the
+  same result. This is because a member in the permission mapper
+  automatically gets the view permission.
+
+- If you go to the admin screen you will see the same. Note that if
+  you empty the permission group, you will not see anything in the
+  admin screen. The admin screen has extra filtering on model class
+  which depend on the permission group.
+
+- If you try to save an object, you must have the add/change
+  permission.
+
+- If you are not logged in, you will not see items of data set
+  "Editable".
+
 
 Development on lizard-security
 ------------------------------
