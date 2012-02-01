@@ -212,7 +212,12 @@ mechanism needs four changes:
 
 - We want to use (or subclass) lizard-security's special admin class.
 
-Here's an example illustrating it::
+Example usage
+-------------
+
+Here's an example illustrating the use of lizard-security. Remember to
+put lizard-security in your INSTALLED_APPS list, above the apps that
+use lizard-security.
 
     from django.db import models
     from django.contrib import admin
