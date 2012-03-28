@@ -283,7 +283,7 @@ Lizard-security must be solid as a rock. Therefore I've kept the **code
 coverage at 100%**. If you develop on lizard-security, **keep** the coverage
 at 100%.
 
-We need to be quite conservative at adding features or conrner case tweaks. If
+We need to be quite conservative at adding features or corner case tweaks. If
 you add one: do it in a branch. We're using Git for a reason.
 
 Lizard-security is available `on github
