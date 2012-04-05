@@ -42,6 +42,9 @@ class LizardPermissionBackend(object):
             # We' interested in a global permissions by definition. We only
             # deal with object-level permissions.
             return False
+        if not hasattr(obj, 'data_set'):
+            # We only manage objects with a data set attached.
+            return False
         try:
             user_group_ids = getattr(request, USER_GROUP_IDS, None)
             allowed_data_set_ids = getattr(request, ALLOWED_DATA_SET_IDS, None)
@@ -49,14 +52,13 @@ class LizardPermissionBackend(object):
             # No tread-local request object.
             return False
         user_group_query = Q(user_group__id__in=user_group_ids)
-        empty_data_set = Q(data_set=None)
-        if allowed_data_set_ids:
-            matching_data_sets = Q(data_set__in=allowed_data_set_ids)
-            data_set_query = matching_data_sets | empty_data_set
-        else:
-            data_set_query = empty_data_set
+        relevant_data_set = obj.data_set
+        data_set_query = Q(data_set=relevant_data_set)
         relevant_permission_mappers = PermissionMapper.objects.filter(
             user_group_query & data_set_query)
+        if not relevant_permission_mappers:
+            # No, we cannot say anything about it.
+            return False
         if perm == VIEW_PERMISSION:
             # We have *some* permission on the object, so by design we have
             # the implicit view permission, too.
