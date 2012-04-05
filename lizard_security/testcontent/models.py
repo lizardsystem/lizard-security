@@ -7,6 +7,20 @@ from lizard_security.manager import FilteredGeoManager
 from lizard_security.models import DataSet
 from lizard_security.admin import SecurityFilteredAdmin
 
+class ContentWithoutDataset(models.Model):
+    """Test content.
+
+    Just for testing lizard-security's interoperability with
+    non-lizard-security  models.
+
+    """
+    name = models.CharField('name',
+                            max_length=80,
+                            blank=True)
+
+    def __unicode__(self):
+        return self.name
+
 
 class Content(models.Model):
     """Test content.

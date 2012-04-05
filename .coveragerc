@@ -11,5 +11,6 @@ omit =
     eggs/*
     local_checkouts/*
     parts/*
+    /home/arjan/code/buildout/eggs/*
 
 ignore_errors = true

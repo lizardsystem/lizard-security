@@ -26,7 +26,7 @@ DATABASES = {
     # that as an error.
     'default': {
         'NAME': 'lizard-security.db',
-        'ENGINE': 'django.contrib.db.backends.spatialite',
+        'ENGINE': 'django.contrib.gis.db.backends.spatialite',
         'USER': '',
         'PASSWORD': '',
         'HOST': '',  # empty string for localhost.

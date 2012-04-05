@@ -7,6 +7,8 @@ Changelog of lizard-security
 
 - Added example usage in README.rst.
 
+- Fix bug where object permissions weren't checked correctly
+
 
 0.4 (2011-12-22)
 ----------------

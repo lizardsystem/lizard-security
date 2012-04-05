@@ -18,6 +18,7 @@ from lizard_security.middleware import SecurityMiddleware
 from lizard_security.models import DataSet
 from lizard_security.models import PermissionMapper
 from lizard_security.models import UserGroup
+from lizard_security.testcontent.models import ContentWithoutDataset
 from lizard_security.testcontent.models import Content
 from lizard_security.testcontent.models import GeoContent
 from lizard_security import manager as geo_manager
@@ -223,24 +224,19 @@ class PermissionBackendTest(TestCase):
             'managermanager',
             'a@a.nl',
             'managermanager')
-        self.manager.save()
         self.manager.is_staff = True
         self.manager.save()
         self.user_group = UserGroup()
         self.user_group.save()
-        self.data_set = DataSet(name='data_set')
-        self.data_set.save()
+        self.data_set = DataSet.objects.create(name='data_set')
         self.content = Content()
-        self.content.save()
         self.content.data_set = self.data_set
         self.content.save()
         self.permission_mapper = PermissionMapper()
-        self.permission_mapper.save()
         self.permission_mapper.user_group = self.user_group
         self.permission_mapper.data_set = self.data_set
         self.permission_mapper.save()
         self.content = Content()
-        self.content.save()
         self.content.data_set = self.data_set
         self.content.save()
 
@@ -265,7 +261,6 @@ class PermissionBackendTest(TestCase):
         group = Group()
         group.save()
         group.permissions.add(add_permission)
-        group.save()
         self.permission_mapper.permission_group = group
         self.permission_mapper.save()
         self.assertFalse(self.backend.has_perm(
@@ -286,19 +281,27 @@ class PermissionBackendTest(TestCase):
                     'lizard_security.can_view_lizard_data',
                     self.content))
 
+    def test_has_perm_without_mappers(self):
+        # Without any permission mappers created for this user
+        self.content = Content()
+        self.other_data_set = DataSet.objects.create(name='other_data_set')
+        self.content.data_set = self.other_data_set
+        self.content.save()
+        with patch('lizard_security.backends.request') as request:
+            request.user_group_ids = [self.user_group.id]
+            request.allowed_data_set_ids = []
+            self.assertFalse(self.backend.has_perm(
+                    self.manager, 'testcontent.change_content', self.content))
+
     def test_has_perm_with_unset_dataset(self):
-        # And now without a dataset.
+        # And now with dataset is None
         add_permission = Permission.objects.get(codename='change_content')
         group = Group()
         group.save()
         group.permissions.add(add_permission)
-        group.save()
         self.permission_mapper.permission_group = group
-        self.permission_mapper.save()
         self.permission_mapper.data_set = None
         self.permission_mapper.save()
-        self.content = Content()
-        self.content.save()
         self.content.data_set = None
         self.content.save()
         self.assertFalse(self.backend.has_perm(
@@ -310,6 +313,20 @@ class PermissionBackendTest(TestCase):
             self.assertTrue(self.backend.has_perm(
                     self.manager, 'testcontent.change_content', self.content))
 
+    def test_has_perm_with_no_dataset(self):
+        # And now with an object that has no dataset attribute
+        add_permission = Permission.objects.get(codename='change_content')
+        group = Group()
+        group.save()
+        group.permissions.add(add_permission)
+        self.permission_mapper.permission_group = group
+        self.permission_mapper.data_set = None
+        self.permission_mapper.save()
+        
+        self.content = ContentWithoutDataset()
+        self.content.save()
+        self.assertFalse(self.backend.has_perm(
+                self.manager, 'testcontent.change_content', self.content))
 
 class MiddlewareTest(TestCase):
 
