@@ -2,7 +2,7 @@ Changelog of lizard-security
 ===================================================
 
 
-0.5 (unreleased)
+0.5 (2012-04-05)
 ----------------
 
 - Added example usage in README.rst.
