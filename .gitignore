@@ -35,3 +35,4 @@ src
 
 # Ignore generated apache config files
 etc/*.apache.conf
+lizard_security/local_testsettings.py
