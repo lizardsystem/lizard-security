@@ -1,6 +1,9 @@
 Protecting and filtering your website with lizard-security
 ==========================================================
 
+.. image:: https://travis-ci.org/lizardsystem/lizard-security.png?branch=master
+   :target: https://travis-ci.org/lizardsystem/lizard-security
+
 
 What lizard-security does
 -------------------------
