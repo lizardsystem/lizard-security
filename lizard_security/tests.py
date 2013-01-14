@@ -2,12 +2,13 @@
 # -*- coding: utf-8 -*-
 
 from django.contrib.admin.sites import AdminSite
+from django.contrib.auth.models import AnonymousUser
+from django.contrib.auth.models import Group
+from django.contrib.auth.models import Permission
 from django.contrib.auth.models import User
 from django.test import TestCase
 from django.test.client import Client
 from django.test.client import RequestFactory
-from django.contrib.auth.models import Group
-from django.contrib.auth.models import Permission
 from mock import Mock
 from mock import patch
 
@@ -322,7 +323,7 @@ class PermissionBackendTest(TestCase):
         self.permission_mapper.permission_group = group
         self.permission_mapper.data_set = None
         self.permission_mapper.save()
-        
+
         self.content = ContentWithoutDataset()
         self.content.save()
         self.assertFalse(self.backend.has_perm(
@@ -334,7 +335,8 @@ class MiddlewareTest(TestCase):
         self.middleware = SecurityMiddleware()
         request_factory = RequestFactory()
         self.request = request_factory.get('/some/url')
-        self.request.session = {}  # Weird that it is needed.
+        self.request.session = {}  # RequestFactory is bare-bones
+        self.anonymous = AnonymousUser()
         self.admin1 = User(email='admin1@example.org', username='admin1')
         self.admin1.save()
         self.user1 = User(email='user1@example.org', username='user1')
@@ -351,11 +353,13 @@ class MiddlewareTest(TestCase):
         self.data_set2.save()
 
     def test_user_groups_for_anonymous(self):
+        self.request.user = self.anonymous
         self.assertEquals([], self.middleware._user_group_ids(self.request))
         self.middleware.process_request(self.request)
         self.assertEquals(self.request.user_group_ids, set([]))
 
     def test_data_sets_for_anonymous(self):
+        self.request.user = self.anonymous
         self.assertListEqual(
             [],
             list(self.middleware._data_sets(self.request)))
