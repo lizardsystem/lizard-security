@@ -12,13 +12,19 @@ Lizard-security's ``admin.py`` contains two kinds of model admins:
 """
 from django.contrib import admin
 from django.contrib.auth.models import Permission
-from tls import request as tls_request
 from django.forms import ModelForm
+from tls import request as tls_request
 
+from lizard_security.middleware import USER_GROUP_IDS
+from lizard_security.models import DataOwner
 from lizard_security.models import DataSet
 from lizard_security.models import PermissionMapper
 from lizard_security.models import UserGroup
-from lizard_security.middleware import USER_GROUP_IDS
+
+
+class DataOwnerAdmin(admin.ModelAdmin):
+    """Docstring."""
+    filter_horizontal = ('data_managers', )
 
 
 class DataSetAdmin(admin.ModelAdmin):
@@ -158,6 +164,7 @@ class SecurityFilteredAdmin(admin.ModelAdmin):
         return perm in self._available_permissions()
 
 
+admin.site.register(DataOwner, DataOwnerAdmin)
 admin.site.register(DataSet, DataSetAdmin)
 admin.site.register(UserGroup, UserGroupAdmin)
 admin.site.register(PermissionMapper, PermissionMapperAdmin)
