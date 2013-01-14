@@ -5,7 +5,8 @@ Changelog of lizard-security
 0.6 (unreleased)
 ----------------
 
-- Nothing changed yet.
+- Added automatic testing with `travis CI
+  <https://travis-ci.org/lizardsystem/lizard-security/>`_.
 
 
 0.5 (2012-04-05)
