@@ -18,6 +18,35 @@ from django.utils.translation import ugettext_lazy as _
 CAN_VIEW_LIZARD_DATA = 'can_view_lizard_data'
 
 
+class DataOwner(models.Model):
+    """Owner of the data.
+
+    An organization, for example.
+
+    """
+    name = models.CharField(
+        max_length=256,
+        verbose_name=_('name')
+    )
+    data_managers = models.ManyToManyField(
+        User,
+        blank=True,
+        verbose_name=_('managers')
+    )
+    remarks = models.TextField(
+        blank=True,
+        verbose_name=_('remarks')
+    )
+
+    def __unicode__(self):
+        return self.name
+
+    class Meta:
+        ordering = ['name']
+        verbose_name = _('data owner')
+        verbose_name_plural = _('data owners')
+
+
 class DataSet(models.Model):
     """Grouping of data.
 
@@ -25,17 +54,25 @@ class DataSet(models.Model):
     this data set.
 
     """
-    name = models.CharField(_('name'),
-                            max_length=80,
-                            blank=True)
+    owner = models.ForeignKey(
+        DataOwner,
+        blank=True,
+        null=True,
+        verbose_name=_('owner'),
+    )
+    name = models.CharField(
+        _('name'),
+        max_length=80,
+    )
 
     def __unicode__(self):
         return self.name
 
     class Meta:
-        verbose_name = _('Data set')
-        verbose_name_plural = _('Data sets')
-        ordering = ['name']
+        ordering = ['owner', 'name']
+        unique_together = ('owner', 'name')
+        verbose_name = _('data set')
+        verbose_name_plural = _('data sets')
 
 
 class UserGroup(models.Model):

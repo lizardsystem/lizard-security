@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-12-05 06:39-0600\n"
+"POT-Creation-Date: 2013-01-14 08:59-0600\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,46 +17,62 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: models.py:28 models.py:49 models.py:107
+#: models.py:29 models.py:64 models.py:86 models.py:144
 msgid "name"
 msgstr ""
 
-#: models.py:36
-msgid "Data set"
-msgstr ""
-
-#: models.py:37
-msgid "Data sets"
-msgstr ""
-
-#: models.py:53
+#: models.py:34 models.py:90
 msgid "managers"
 msgstr ""
 
-#: models.py:57
+#: models.py:38
+msgid "remarks"
+msgstr ""
+
+#: models.py:46
+msgid "data owner"
+msgstr ""
+
+#: models.py:47
+msgid "data owners"
+msgstr ""
+
+#: models.py:61
+msgid "owner"
+msgstr ""
+
+#: models.py:74
+msgid "data set"
+msgstr ""
+
+#: models.py:75
+msgid "data sets"
+msgstr ""
+
+#: models.py:94
 msgid "members"
 msgstr ""
 
-#: models.py:64
+#: models.py:101
 msgid "Number of members"
 msgstr ""
 
-#: models.py:84
+#: models.py:121
 msgid "Managers"
 msgstr ""
 
-#: models.py:90
+#: models.py:127
 msgid "User group"
 msgstr ""
 
-#: models.py:91
+#: models.py:128
 msgid "User groups"
 msgstr ""
 
-#: models.py:126
+#: models.py:163
 msgid "Permission mapper"
 msgstr ""
 
-#: models.py:127
+#: models.py:164
 msgid "Permission mappers"
 msgstr ""
