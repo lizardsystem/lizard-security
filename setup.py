@@ -13,12 +13,13 @@ install_requires = [
     'django-extensions',
     'django-nose',
     'django-tls',
-    'mock',
     'pkginfo',
     'south',
     ],
 
 tests_require = [
+    'coverage',
+    'mock',
     ]
 
 setup(name='lizard-security',
