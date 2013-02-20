@@ -15,6 +15,8 @@ from django.contrib.auth.models import User
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
+from lizard_security import manager
+
 CAN_VIEW_LIZARD_DATA = 'can_view_lizard_data'
 
 
@@ -54,6 +56,8 @@ class DataSet(models.Model):
     this data set.
 
     """
+    objects = manager.DataSetManager()
+
     owner = models.ForeignKey(
         DataOwner,
         blank=True,

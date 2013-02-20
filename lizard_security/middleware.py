@@ -8,7 +8,6 @@ permission mapper mechanism.
 from lizard_security.models import DataSet
 
 USER_GROUP_IDS = 'user_group_ids'
-ALLOWED_DATA_SET_IDS = 'allowed_data_set_ids'
 
 
 class SecurityMiddleware(object):
@@ -28,12 +27,8 @@ class SecurityMiddleware(object):
         """Set the allowed user group ids and data set ids on the request."""
         if not hasattr(request, USER_GROUP_IDS):
             request.user_group_ids = set()
-        if not hasattr(request, ALLOWED_DATA_SET_IDS):
-            request.allowed_data_set_ids = set()
         request.user_group_ids = request.user_group_ids.union(
             self._user_group_ids(request))
-        request.allowed_data_set_ids = request.allowed_data_set_ids.union(
-            self._data_sets(request))
 
     def _user_group_ids(self, request):
         """Return user group ids based on Django users.
@@ -47,17 +42,3 @@ class SecurityMiddleware(object):
             return []
         return request.user.user_group_memberships.values_list('id',
                                                                flat=True)
-
-    def _data_sets(self, request):
-        """Return data sets we have access to through user group membership.
-
-        Other middleware can allow data set access based on other reasons, but
-        we look at links from user groups to data sets through permission
-        mappers. Any link at all means we implicitly have view access.
-
-        """
-        if not hasattr(request, 'user_group_ids'):
-            return []
-        return DataSet.objects.filter(
-            permission_mappers__user_group__id__in=request.user_group_ids
-            ).values_list('id', flat=True)

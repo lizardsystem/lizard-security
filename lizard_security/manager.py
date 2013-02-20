@@ -1,67 +1,100 @@
 # (c) Nelen & Schuurmans.  GPL licensed, see LICENSE.txt
 # -*- coding: utf-8 -*-
 """
-To securely filter our objects we don't have access to, we use a custom Django
-object manager: ``FilteredManager``. We have to set that object manager on our
-models.
+To securely filter objects we don't have access to, we use a custom Django
+object manager: ``TimeseriesManager``. We have to set that object manager
+on our models.
 
 """
 from django.contrib.gis.db.models import GeoManager
-from django.db.models.manager import Manager
+from django.contrib.gis.db.models.query import GeoQuerySet
 from django.db.models.manager import Manager
 from django.db.models import Q
 from tls import request
-
-from lizard_security.middleware import ALLOWED_DATA_SET_IDS
-
-
-def data_set_filter(model_class):
-    """Filter that checks if we're properly allowed via the dataset.
-
-    If data set is empty, that counts as "everybody has access". Otherwise we
-    only have access to data sets available to us as user.
-
-    """
-    empty_data_set = Q(data_set=None)
-    try:
-        user = request.user
-    except RuntimeError:
-        # We don't have a local request object.
-        return
-    if user is not None and user.is_superuser:
-        return
-    data_set_ids = getattr(request, ALLOWED_DATA_SET_IDS, None)
-    if data_set_ids:
-        match_with_data_set = Q(data_set__in=data_set_ids)
-        return empty_data_set | match_with_data_set
-    else:
-        return empty_data_set
+from treebeard.mp_tree import MP_NodeManager
+from treebeard.mp_tree import MP_NodeQuerySet
 
 
 class FilteredManager(Manager):
-    """Custom manager that filters out objects whose data set we can't access.
+    # For backwards compatibility with lizard-ui.
+    pass
+
+
+def is_admin():
+    if request:
+        user = getattr(request, 'user', None)
+        return user and user.is_superuser
+    return True
+
+
+class TimeseriesManager(Manager):
+    """Manager that filters out ``Timeseries`` we have no permissions for."""
+
+    def get_query_set(self):
+        """Return base queryset, filtered by lizard-security's mechanism."""
+        query_set = super(TimeseriesManager, self).get_query_set()
+        if is_admin():
+            return query_set
+        return query_set.filter(
+            data_set__permission_mappers__user_group__id__in=
+            getattr(request, 'user_group_ids', [])).distinct()
+
+
+class DataSetManager(Manager):
+    """Manager that filters out ``Timeseries`` we have no permissions for."""
+
+    def get_query_set(self):
+        """Return base queryset, filtered by lizard-security's mechanism."""
+        query_set = super(DataSetManager, self).get_query_set()
+        if is_admin():
+            return query_set
+        return query_set.filter(
+            permission_mappers__user_group__id__in=
+            getattr(request, 'user_group_ids', [])).distinct()
+
+
+class LocationQuerySet(GeoQuerySet, MP_NodeQuerySet):
+    """Custom QuerySet that combines ``GeoQuerySet`` and ``MP_NodeQuerySet``.
+
+    This tackles multiple inheritance problems: see ``LocationManager``.
+    Note that while both super classes currently do have distinct
+    methods, this might not be the case in the future.
+
+    """
+
+    def __init__(self, *args, **kwargs):
+        super(LocationQuerySet, self).__init__(*args, **kwargs)
+
+
+class LocationManager(GeoManager, MP_NodeManager):
+    """Custom manager for the ``Location`` model class.
+
+    We are bitten by multiple inheritance here: a ``GeoManager`` is required to
+    support spatial queries, while an ``MP_NodeManager`` is needed by django-
+    treebeard for manipulating trees. Both managers override get_query_set!
+    This is solved by creating a custom ``LocationQuerySet``.
+
     """
 
     def get_query_set(self):
-        """Return base queryset, filtered through lizard-security's mechanism.
-        """
-        query_set = super(FilteredManager, self).get_query_set()
-        extra_filter = data_set_filter(self.model)
-        if extra_filter is not None:
-            query_set = query_set.filter(extra_filter)
-        return query_set
+        # Satisfy both GeoManager and MP_NodeManager:
+        query_set = LocationQuerySet(self.model,
+            using=self._db).order_by('path')
+        if is_admin():
+            return query_set
+        return query_set.filter(
+            timeseries__data_set__permission_mappers__user_group__id__in=
+            getattr(request, 'user_group_ids', [])).distinct()
 
 
-class FilteredGeoManager(GeoManager):
-    """Custom geomanager that filters out objects whose data set we can't
-    access.
-    """
+class LogicalGroupManager(Manager):
+    """Manager that filters out ``Timeseries`` we have no permissions for."""
 
     def get_query_set(self):
-        """Return base queryset, filtered through lizard-security's mechanism.
-        """
-        query_set = super(FilteredGeoManager, self).get_query_set()
-        extra_filter = data_set_filter(self.model)
-        if extra_filter is not None:
-            query_set = query_set.filter(extra_filter)
-        return query_set
+        """Return base queryset, filtered by lizard-security's mechanism."""
+        query_set = super(LogicalGroupManager, self).get_query_set()
+        if is_admin():
+            return query_set
+        return query_set.filter(
+            timeseries__data_set__permission_mappers__user_group__id__in=
+            getattr(request, 'user_group_ids', [])).distinct()

@@ -1,21 +1,21 @@
-# (c) Nelen & Schuurmans.  GPL licensed, see LICENSE.txt
-# -*- coding: utf-8 -*-
+# (c) Nelen & Schuurmans.  MIT licensed, see LICENSE.rst.
 """
 Lizard-security provides its own `authentication backend
 <https://docs.djangoproject.com/en/dev/topics/auth/>`_ for checking
 permissions.
 
 """
+from __future__ import unicode_literals
 from django.contrib.auth.models import Permission
 from django.db.models import Q
 from tls import request
 
-from lizard_security.middleware import ALLOWED_DATA_SET_IDS
 from lizard_security.middleware import USER_GROUP_IDS
 from lizard_security.models import PermissionMapper
 from lizard_security.models import CAN_VIEW_LIZARD_DATA
 
 VIEW_PERMISSION = 'lizard_security.' + CAN_VIEW_LIZARD_DATA
+APP_LABEL = 'ddsc_core'
 
 
 class LizardPermissionBackend(object):
@@ -45,15 +45,15 @@ class LizardPermissionBackend(object):
         if not hasattr(obj, 'data_set'):
             # We only manage objects with a data set attached.
             return False
-        try:
+        if request:
             user_group_ids = getattr(request, USER_GROUP_IDS, None)
-            allowed_data_set_ids = getattr(request, ALLOWED_DATA_SET_IDS, None)
-        except RuntimeError:
+        else:
             # No tread-local request object.
-            return False
+            user_group_ids = user.user_group_memberships.values_list('id',
+                flat=True)
         user_group_query = Q(user_group__id__in=user_group_ids)
-        relevant_data_set = obj.data_set
-        data_set_query = Q(data_set=relevant_data_set)
+        relevant_data_sets = obj.data_set.values_list('id', flat=True)
+        data_set_query = Q(data_set__in=relevant_data_sets)
         relevant_permission_mappers = PermissionMapper.objects.filter(
             user_group_query & data_set_query)
         if not relevant_permission_mappers:
@@ -96,3 +96,46 @@ class LizardPermissionBackend(object):
                 if perm.content_type.app_label == app_label:
                     return True
         return False
+
+class DDSCPermissionBackend(LizardPermissionBackend):
+    """Checker for object-level permissions via lizard-security."""
+
+    def has_perm(self, user, permission, obj=None):
+        """Return if we have a permission through a permission manager.
+
+        Note: ``perm`` is a string like ``'testcontent.change_content'``, not
+        a Permission object.
+
+        We don't look at a user, just at user group membership. Our middleware
+        translated logged in users to user group membership already.
+
+        """
+        if obj is None:
+            # We' interested in a global permissions by definition. We only
+            # deal with object-level permissions.
+            return False
+        if not hasattr(obj, 'data_set'):
+            # We only manage objects with a data set attached.
+            return False
+        if request:
+            user_group_ids = getattr(request, USER_GROUP_IDS, None)
+        else:
+            # No tread-local request object.
+            user_group_ids = user.user_group_memberships.values_list('id',
+                flat=True)
+        user_group_query = Q(user_group__id__in=user_group_ids)
+        relevant_data_sets = obj.data_set.values_list('id', flat=True)
+        data_set_query = Q(data_set__in=relevant_data_sets)
+        relevant_permission_mappers = PermissionMapper.objects.filter(
+            user_group_query & data_set_query)
+        if not relevant_permission_mappers:
+            # No, we cannot say anything about it.
+            return False
+        # We need to check whether we have the specific permission.
+        permissions = Permission.objects.filter(
+            group__permissionmapper__in=relevant_permission_mappers)
+        permissions = [(p.content_type.app_label + '.' + p.codename)
+                       for p in permissions]
+        obj_class = obj.__class__.__name__.lower()
+        perm = '%s.%s_%s' % (APP_LABEL, permission, obj_class)
+        return perm in permissions
