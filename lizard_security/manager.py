@@ -28,8 +28,11 @@ def filter_by_permissions(query_set, relation):
         # User is admin, so no extra filtering.
         return query_set
     args = []
+    groups = getattr(request, 'user_group_ids', [])
+    if len(groups) == 0:
+        query_set.none()
     relation = relation + ["permission_mappers", "user_group", "id", "in"]
-    kwargs = {"__".join(relation): getattr(request, 'user_group_ids', [])}
+    kwargs = {"__".join(relation): groups}
     return query_set.filter(*args, **kwargs).distinct()
 
 
