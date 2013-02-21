@@ -9,7 +9,6 @@ on our models.
 from django.contrib.gis.db.models import GeoManager
 from django.contrib.gis.db.models.query import GeoQuerySet
 from django.db.models.manager import Manager
-from django.db.models import Q
 from tls import request
 from treebeard.mp_tree import MP_NodeManager
 from treebeard.mp_tree import MP_NodeQuerySet
