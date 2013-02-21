@@ -6,7 +6,7 @@ permissions.
 
 """
 from __future__ import unicode_literals
-from django.contrib.auth.models import Permission
+from django.contrib.auth.models import User, Permission
 from django.db.models import Q
 from tls import request
 
@@ -24,7 +24,7 @@ class LizardPermissionBackend(object):
     supports_object_permissions = True
     supports_anonymous_user = True
 
-    def authenticate(self):
+    def authenticate(self, username=None, password=None, **kwargs):
         """Nope, we don't handle authentication."""
         pass
 
@@ -100,7 +100,18 @@ class LizardPermissionBackend(object):
 class DDSCPermissionBackend(LizardPermissionBackend):
     """Checker for object-level permissions via lizard-security."""
 
+    def authenticate(self, username=None, password=None, **kwargs):
+        if username is None:
+            username = kwargs.get(User.USERNAME_FIELD)
+        try:
+            user = User._default_manager.get_by_natural_key(username)
+            if user.check_password(password):
+                return user
+        except User.DoesNotExist:
+            return None
+
     def has_perm(self, user, permission, obj=None):
+        print "has_perm %s, %s, %s" % (user, permission, obj)
         """Return if we have a permission through a permission manager.
 
         Note: ``perm`` is a string like ``'testcontent.change_content'``, not
