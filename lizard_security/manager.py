@@ -20,11 +20,18 @@ class FilteredManager(Manager):
     pass
 
 
-def is_admin():
-    if request:
-        user = getattr(request, 'user', None)
-        return user and user.is_superuser
-    return True
+def filter_by_permissions(query_set, relation):
+    if not request:
+        # Not running in site-context, so no extra filtering.
+        return query_set
+    user = getattr(request, 'user', None)
+    if user and user.is_superuser:
+        # User is admin, so no extra filtering.
+        return query_set
+    args = []
+    relation = relation + ["permission_mappers", "user_group", "id", "in"]
+    kwargs = {"__".join(relation): getattr(request, 'user_group_ids', [])}
+    return query_set.filter(*args, **kwargs).distinct()
 
 
 class TimeseriesManager(Manager):
@@ -33,11 +40,7 @@ class TimeseriesManager(Manager):
     def get_query_set(self):
         """Return base queryset, filtered by lizard-security's mechanism."""
         query_set = super(TimeseriesManager, self).get_query_set()
-        if is_admin():
-            return query_set
-        return query_set.filter(
-            data_set__permission_mappers__user_group__id__in=
-            getattr(request, 'user_group_ids', [])).distinct()
+        return filter_by_permissions(query_set, ["data_set"])
 
 
 class DataSetManager(Manager):
@@ -46,11 +49,7 @@ class DataSetManager(Manager):
     def get_query_set(self):
         """Return base queryset, filtered by lizard-security's mechanism."""
         query_set = super(DataSetManager, self).get_query_set()
-        if is_admin():
-            return query_set
-        return query_set.filter(
-            permission_mappers__user_group__id__in=
-            getattr(request, 'user_group_ids', [])).distinct()
+        return filter_by_permissions(query_set, [])
 
 
 class LocationQuerySet(GeoQuerySet, MP_NodeQuerySet):
@@ -80,11 +79,7 @@ class LocationManager(GeoManager, MP_NodeManager):
         # Satisfy both GeoManager and MP_NodeManager:
         query_set = LocationQuerySet(self.model,
             using=self._db).order_by('path')
-        if is_admin():
-            return query_set
-        return query_set.filter(
-            timeseries__data_set__permission_mappers__user_group__id__in=
-            getattr(request, 'user_group_ids', [])).distinct()
+        return filter_by_permissions(query_set, ["timeseries", "data_set"])
 
 
 class LogicalGroupManager(Manager):
@@ -93,8 +88,4 @@ class LogicalGroupManager(Manager):
     def get_query_set(self):
         """Return base queryset, filtered by lizard-security's mechanism."""
         query_set = super(LogicalGroupManager, self).get_query_set()
-        if is_admin():
-            return query_set
-        return query_set.filter(
-            timeseries__data_set__permission_mappers__user_group__id__in=
-            getattr(request, 'user_group_ids', [])).distinct()
+        return filter_by_permissions(query_set, ["timeseries", "data_set"])
