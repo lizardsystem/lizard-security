@@ -111,7 +111,6 @@ class DDSCPermissionBackend(LizardPermissionBackend):
             return None
 
     def has_perm(self, user, permission, obj=None):
-        print "has_perm %s, %s, %s" % (user, permission, obj)
         """Return if we have a permission through a permission manager.
 
         Note: ``perm`` is a string like ``'testcontent.change_content'``, not
