@@ -31,7 +31,7 @@ def filter_by_permissions(query_set, relation):
     groups = getattr(request, 'user_group_ids', [])
     if len(groups) == 0:
         query_set.none()
-    relation = relation + ["permission_mappers", "user_group", "id", "in"]
+    relation = relation + ["permission_mappers", "user_group", "in"]
     kwargs = {"__".join(relation): groups}
     return query_set.filter(*args, **kwargs).distinct()
 
