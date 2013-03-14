@@ -81,7 +81,8 @@ class LocationManager(GeoManager, MP_NodeManager):
     def get_query_set(self):
         # Satisfy both GeoManager and MP_NodeManager:
         query_set = LocationQuerySet(self.model, using=self._db)
-        return filter_by_permissions(query_set, ["timeseries", "data_set"])
+        return filter_by_permissions(query_set, ["timeseries", "data_set"]) \
+            .order_by('path')
 
 
 class LogicalGroupManager(Manager):
