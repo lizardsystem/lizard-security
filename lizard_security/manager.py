@@ -9,6 +9,7 @@ on our models.
 from django.contrib.gis.db.models import GeoManager
 from django.contrib.gis.db.models.query import GeoQuerySet
 from django.db.models.manager import Manager
+from sets import Set
 from tls import request
 from treebeard.mp_tree import MP_NodeManager
 from treebeard.mp_tree import MP_NodeQuerySet
@@ -79,9 +80,15 @@ class LocationManager(GeoManager, MP_NodeManager):
 
     def get_query_set(self):
         # Satisfy both GeoManager and MP_NodeManager:
-        query_set = LocationQuerySet(self.model,
-            using=self._db).order_by('path')
-        return filter_by_permissions(query_set, ["timeseries", "data_set"])
+        query_set = LocationQuerySet(self.model, using=self._db)
+        # Find the locations that directly have any visible timeseries.
+        directly = filter_by_permissions(query_set, ["timeseries", "data_set"])
+        # Now find all superlocations for those locations:
+        all = Set([])
+        for path in directly.values_list('path', flat=True):
+            for i in range(1, len(path) / 4 + 1):
+                all.add(path[0:i*4])
+        return query_set.filter(path__in = all)
 
 
 class LogicalGroupManager(Manager):
