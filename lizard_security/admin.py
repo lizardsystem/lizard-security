@@ -30,6 +30,7 @@ class DataOwnerAdmin(admin.ModelAdmin):
 class DataSetAdmin(admin.ModelAdmin):
     """Unmodified admin for data sets."""
     model = DataSet
+    list_display = ('name', 'owner', )
 
 
 class UserGroupAdminForm(ModelForm):
