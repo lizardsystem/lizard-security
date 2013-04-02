@@ -128,6 +128,7 @@ class UserGroup(models.Model):
         return self.name
 
     class Meta:
+        ordering = ["name"]
         verbose_name = _('User group')
         verbose_name_plural = _('User groups')
 
