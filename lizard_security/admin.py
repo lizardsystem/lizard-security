@@ -13,6 +13,7 @@ Lizard-security's ``admin.py`` contains two kinds of model admins:
 from django.contrib import admin
 from django.contrib.auth.models import Permission
 from django.forms import ModelForm
+from django.utils.translation import ugettext_lazy as _
 from tls import request as tls_request
 
 from lizard_security.middleware import USER_GROUP_IDS
@@ -20,6 +21,11 @@ from lizard_security.models import DataOwner
 from lizard_security.models import DataSet
 from lizard_security.models import PermissionMapper
 from lizard_security.models import UserGroup
+
+
+class PermissionMapperInline(admin.TabularInline):
+    model = PermissionMapper
+    extra = 1
 
 
 class DataOwnerAdmin(admin.ModelAdmin):
@@ -60,11 +66,21 @@ class UserGroupAdmin(admin.ModelAdmin):
     User groups are also filtered to only those you are a manager of.
 
     """
+    fieldsets = (
+        (None, {
+            'fields': ('name', 'members', )
+        }),
+        (_('Managers'), {
+            'classes': ('collapse', ),
+            'fields': ('managers', )
+        }),
+    )
     model = UserGroup
     form = UserGroupAdminForm
     list_display = ('name', 'manager_info', 'number_of_members')
     search_fields = ('name', )
     filter_horizontal = ('managers', 'members')
+    inlines = [PermissionMapperInline]
 
     def queryset(self, request):
         """Limit user groups to those you manage.
