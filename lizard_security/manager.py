@@ -46,6 +46,15 @@ class TimeseriesManager(Manager):
         return filter_by_permissions(query_set, ["data_set"])
 
 
+class StatusCacheManager(Manager):
+    """Manager that filters out ``Timeseries`` we have no permissions for."""
+
+    def get_query_set(self):
+        """Return base queryset, filtered by lizard-security's mechanism."""
+        query_set = super(StatusCacheManager, self).get_query_set()
+        return filter_by_permissions(query_set, ["timeseries", "data_set"])
+
+
 class DataSetManager(Manager):
     """Manager that filters out ``Timeseries`` we have no permissions for."""
 
@@ -83,6 +92,7 @@ class LocationManager(GeoManager, MP_NodeManager):
         query_set = LocationQuerySet(self.model, using=self._db)
         return filter_by_permissions(query_set, ["timeseries", "data_set"]) \
             .order_by('path')
+
 
 
 class LogicalGroupManager(Manager):
