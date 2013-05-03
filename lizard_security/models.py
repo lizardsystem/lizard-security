@@ -28,7 +28,8 @@ class DataOwner(models.Model):
     """
     name = models.CharField(
         max_length=256,
-        verbose_name=_('name')
+        verbose_name=_('name'),
+        unique=True,
     )
     data_managers = models.ManyToManyField(
         User,
