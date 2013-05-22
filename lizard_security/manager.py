@@ -8,6 +8,7 @@ on our models.
 """
 from django.contrib.gis.db.models import GeoManager
 from django.contrib.gis.db.models.query import GeoQuerySet
+from django.db.models import Q
 from django.db.models.manager import Manager
 from sets import Set
 from tls import request
@@ -61,7 +62,22 @@ class DataSetManager(Manager):
     def get_query_set(self):
         """Return base queryset, filtered by lizard-security's mechanism."""
         query_set = super(DataSetManager, self).get_query_set()
-        return filter_by_permissions(query_set, [])
+
+        if not request:
+            # Not running in site-context, so no extra filtering.
+            return query_set
+        user = getattr(request, 'user', None)
+        if user and user.is_superuser:
+            # User is admin, so no extra filtering.
+            return query_set
+        args = []
+        groups = getattr(request, 'user_group_ids', [])
+        if len(groups) == 0:
+            query_set.none()
+
+        query_set = query_set.filter(Q(permission_mappers__user_group__in=groups)|
+                                     Q(owner__data_managers=request.user))
+        return query_set.distinct()
 
 
 class LocationQuerySet(GeoQuerySet, MP_NodeQuerySet):
