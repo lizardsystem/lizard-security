@@ -76,7 +76,7 @@ class DataSetManager(Manager):
             query_set.none()
 
         query_set = query_set.filter(Q(permission_mappers__user_group__in=groups)|
-                                     Q(owner__data_managers=request.user))
+                                     Q(owner__data_managers=user.id))
         return query_set.distinct()
 
 
