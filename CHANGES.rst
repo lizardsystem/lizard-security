@@ -2,6 +2,12 @@ Changelog of lizard-security
 ===================================================
 
 
+ddsc-1.1 (unreleased)
+---------------------
+
+- Nothing changed yet.
+
+
 ddsc-1.0 (2013-05-31)
 ---------------------
 
