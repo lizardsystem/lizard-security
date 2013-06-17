@@ -220,7 +220,8 @@ Example usage
 
 Here's an example illustrating the use of lizard-security. Remember to
 put lizard-security in your INSTALLED_APPS list, above the apps that
-use lizard-security.
+use lizard-security.::
+
 
     from django.db import models
     from django.contrib import admin
@@ -240,7 +241,8 @@ use lizard-security.
 
     admin.site.register(Something, SecurityFilteredAdmin)
 
-Example usage of the filtered Something::
+
+Example usage of the filtered Something:
 
 - Add a permission group (Auth.Group) named "edit-something" and add permissions
   add, change, delete of the model Something.
@@ -259,7 +261,7 @@ Example usage of the filtered Something::
   the data set "Editable", the permission group "edit-something" and
   give it the name "Something Editable".
 
-Results if you log in as editor::
+Results if you log in as editor:
 
 - A call to Something.objects.all() will return all objects where data
   set is "Editable" and where no data set is defined. Note that if you
