@@ -5,6 +5,9 @@ Changelog of lizard-security
 0.6 (unreleased)
 ----------------
 
+- Add `use_for_related_fields = True`. This secures lookups 
+  via ForeignKey.
+
 - Added automatic testing with `travis CI
   <https://travis-ci.org/lizardsystem/lizard-security/>`_.
 
