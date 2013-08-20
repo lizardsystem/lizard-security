@@ -37,30 +37,25 @@ def data_set_filter(model_class):
         return empty_data_set
 
 
-class FilteredManager(Manager):
+class FilteredManagerMixin(object):
     """Custom manager that filters out objects whose data set we can't access.
     """
 
+    use_for_related_fields = True
+
     def get_query_set(self):
         """Return base queryset, filtered through lizard-security's mechanism.
         """
-        query_set = super(FilteredManager, self).get_query_set()
+        query_set = super(FilteredManagerMixin, self).get_query_set()
         extra_filter = data_set_filter(self.model)
         if extra_filter is not None:
             query_set = query_set.filter(extra_filter)
         return query_set
 
 
-class FilteredGeoManager(GeoManager):
-    """Custom geomanager that filters out objects whose data set we can't
-    access.
-    """
+class FilteredManager(FilteredManagerMixin, Manager):
+    pass
 
-    def get_query_set(self):
-        """Return base queryset, filtered through lizard-security's mechanism.
-        """
-        query_set = super(FilteredGeoManager, self).get_query_set()
-        extra_filter = data_set_filter(self.model)
-        if extra_filter is not None:
-            query_set = query_set.filter(extra_filter)
-        return query_set
+
+class FilteredGeoManager(FilteredManagerMixin, GeoManager):
+    pass
