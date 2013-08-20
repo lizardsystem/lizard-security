@@ -8,7 +8,6 @@ models.
 """
 from django.contrib.gis.db.models import GeoManager
 from django.db.models.manager import Manager
-from django.db.models.manager import Manager
 from django.db.models import Q
 from tls import request
 
