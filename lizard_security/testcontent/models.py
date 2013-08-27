@@ -46,6 +46,11 @@ class Content(models.Model):
         return '%s (%s)' % (self.name, data_set_name)
 
 
+class ContentWithForeignKeyToContentWithDataset(models.Model):
+    name = models.TextField('Some field')
+    content = models.ForeignKey(Content, null=True)
+
+
 class GeoContent(geo_models.Model):
     """Test geo content.
 
