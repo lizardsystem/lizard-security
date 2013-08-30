@@ -19,6 +19,7 @@ from lizard_security.middleware import SecurityMiddleware
 from lizard_security.models import DataSet
 from lizard_security.models import PermissionMapper
 from lizard_security.models import UserGroup
+from lizard_security.testcontent import models as testmodels
 from lizard_security.testcontent.models import ContentWithoutDataset
 from lizard_security.testcontent.models import Content
 from lizard_security.testcontent.models import GeoContent
@@ -467,3 +468,55 @@ class FilteredGeoManagerTest(TestCase):
         print request.allowed_data_set_ids
         geo_manager.request = request
         self.assertEqual(len(GeoContent.objects.all()), 2)
+
+
+class ForeignKeyTest(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(
+            'useruser',
+            'u@u.nl',
+            'useruser')
+        self.user.save()
+        self.user_group = UserGroup(name='user_group')
+        self.user_group.save()
+        self.user_group.members.add(self.user)
+        self.user_group.save()
+        self.data_set1 = DataSet(name='data_set10')
+        self.data_set1.save()
+        self.data_set2 = DataSet(name='data_set20')
+        self.data_set2.save()
+
+        self.permission_mapper = PermissionMapper()
+        self.permission_mapper.save()
+        self.permission_mapper.user_group = self.user_group
+        self.permission_mapper.data_set = self.data_set1
+        self.permission_mapper.save()
+
+    def test_foreignkey_works_if_no_dataset(self):
+        content = Content.objects.create(name="Some content without dataset")
+        foreign = testmodels.ContentWithForeignKeyToContentWithDataset.objects.create(
+            name="Whee", content_id=content.pk)
+
+        # Raises no exception
+        self.assertTrue(foreign.content)
+
+    def test_foreignkey_works_if_dataset_with_access(self):
+        content = Content.objects.create(
+            name="Some content with dataset",
+            data_set=self.data_set1)
+        foreign = testmodels.ContentWithForeignKeyToContentWithDataset.objects.create(
+            name="Whee", content_id=content.pk)
+
+        # Raises no exception
+        self.assertTrue(foreign.content)
+
+    def test_foreignkey_raises_if_dataset_without_access(self):
+        content = Content.objects.create(
+            name="Some content with dataset but no access",
+            data_set=self.data_set2)
+        foreign = testmodels.ContentWithForeignKeyToContentWithDataset.objects.create(
+            name="Whee", content_id=content.pk)
+
+        self.assertRaises(
+            Content.DoesNotExist, lambda: foreign.content)
+
