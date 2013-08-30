@@ -41,18 +41,20 @@ class FilteredManagerMixin(object):
     """Custom manager that filters out objects whose data set we can't access.
     """
 
-    # Note: Django's docs discourage setting this to True for managers
-    # that filter away rows from a query set and are used as a model's
-    # default manager (as this one is intended to be), because Django internally
-    # sometimes relies on getting everything back.
+    # Note: Django's docs discourage setting 'user_for_related_fields'
+    # to True for managers that filter away rows from a query set and
+    # are used as a model's default manager (as this one is intended
+    # to be), because Django internally sometimes relies on getting
+    # everything back.
 
-    # However, we think it is still OK here, because we only filter away things
-    # if a request object is available. Outside of a request/response context,
-    # nothing is filtered.
+    # However, we think it is still OK here, because we only filter
+    # away things if a request object is available. Outside of a
+    # request/response context, nothing is filtered.
 
-    # Finally, setting it here implies that it is also True for GeoManager, and
-    # we don't know if that does something dangerous. Luckily that is of no
-    # concern since GeoManager itself also sets use_for_related_fields to True.
+    # Finally, setting it here implies that it is also True for
+    # GeoManager, and we don't know if that does something
+    # dangerous. Luckily that is of no concern since GeoManager itself
+    # also sets use_for_related_fields to True.
 
     # What this _does_ is that models that have a normal manager, that
     # have foreign keys to models controlled by lizard-security will
