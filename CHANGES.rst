@@ -2,7 +2,7 @@ Changelog of lizard-security
 ===================================================
 
 
-0.6 (unreleased)
+0.6 (2013-09-02)
 ----------------
 
 - Add `'use_for_related_fields = True``. This secures lookups
