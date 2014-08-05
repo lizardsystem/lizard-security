@@ -9,7 +9,7 @@ long_description = '\n\n'.join([
     ])
 
 install_requires = [
-    'Django',
+    'Django >= 1.4, < 1.7',
     'django-extensions',
     'django-nose',
     'django-tls',
