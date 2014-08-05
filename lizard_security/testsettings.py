@@ -8,7 +8,7 @@ TEMPLATE_DEBUG = True
 SETTINGS_DIR = os.path.dirname(os.path.realpath(__file__))
 
 # BUILDOUT_DIR is for access to the "surrounding" buildout, for instance for
-# BUILDOUT_DIR/var/static files to give django-staticfiles a proper place
+# BUILDOUT_DIR/var/static files to give staticfiles a proper place
 # to place all collected static files.
 BUILDOUT_DIR = os.path.abspath(os.path.join(SETTINGS_DIR, '..'))
 
