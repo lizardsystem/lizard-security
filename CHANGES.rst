@@ -2,7 +2,7 @@ Changelog of lizard-security
 ===================================================
 
 
-0.7 (unreleased)
+0.7 (2014-08-05)
 ----------------
 
 - Made changes for Django 1.6.5 compatibility. 1.4 - 1.6.5 supported
