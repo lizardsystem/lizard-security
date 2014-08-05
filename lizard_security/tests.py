@@ -266,22 +266,22 @@ class PermissionBackendTest(TestCase):
         self.permission_mapper.permission_group = group
         self.permission_mapper.save()
         self.assertFalse(self.backend.has_perm(
-                self.manager, 'testcontent.change_content', self.content))
+            self.manager, 'testcontent.change_content', self.content))
         # If we belong to the right group, we *do* have access.
         with patch('lizard_security.backends.request') as request:
             request.user_group_ids = [self.user_group.id]
             request.allowed_data_set_ids = [self.data_set.id]
             self.assertTrue(self.backend.has_perm(
-                    self.manager, 'testcontent.change_content', self.content))
+                self.manager, 'testcontent.change_content', self.content))
 
     def test_has_perm_with_implicit_view_perm(self):
         with patch('lizard_security.backends.request') as request:
             request.user_group_ids = [self.user_group.id]
             request.allowed_data_set_ids = [self.data_set.id]
             self.assertTrue(self.backend.has_perm(
-                    self.manager,
-                    'lizard_security.can_view_lizard_data',
-                    self.content))
+                self.manager,
+                'lizard_security.can_view_lizard_data',
+                self.content))
 
     def test_has_perm_without_mappers(self):
         # Without any permission mappers created for this user
@@ -293,7 +293,7 @@ class PermissionBackendTest(TestCase):
             request.user_group_ids = [self.user_group.id]
             request.allowed_data_set_ids = []
             self.assertFalse(self.backend.has_perm(
-                    self.manager, 'testcontent.change_content', self.content))
+                self.manager, 'testcontent.change_content', self.content))
 
     def test_has_perm_with_unset_dataset(self):
         # And now with dataset is None
@@ -307,13 +307,13 @@ class PermissionBackendTest(TestCase):
         self.content.data_set = None
         self.content.save()
         self.assertFalse(self.backend.has_perm(
-                self.manager, 'testcontent.change_content', self.content))
+            self.manager, 'testcontent.change_content', self.content))
         # If we belong to the right group, we *do* have access.
         with patch('lizard_security.backends.request') as request:
             request.user_group_ids = [self.user_group.id]
             request.allowed_data_set_ids = []
             self.assertTrue(self.backend.has_perm(
-                    self.manager, 'testcontent.change_content', self.content))
+                self.manager, 'testcontent.change_content', self.content))
 
     def test_has_perm_with_no_dataset(self):
         # And now with an object that has no dataset attribute
@@ -328,7 +328,8 @@ class PermissionBackendTest(TestCase):
         self.content = ContentWithoutDataset()
         self.content.save()
         self.assertFalse(self.backend.has_perm(
-                self.manager, 'testcontent.change_content', self.content))
+            self.manager, 'testcontent.change_content', self.content))
+
 
 class MiddlewareTest(TestCase):
 
@@ -421,7 +422,7 @@ class MiddlewareTest(TestCase):
         self.request.allowed_data_set_ids = set([42])
         self.middleware.process_request(self.request)
         self.assertSetEqual(set([42, self.data_set1.id]),
-                             self.request.allowed_data_set_ids)
+                            self.request.allowed_data_set_ids)
 
 
 class FilteredGeoManagerTest(TestCase):
@@ -494,8 +495,9 @@ class ForeignKeyTest(TestCase):
 
     def test_foreignkey_works_if_no_dataset(self):
         content = Content.objects.create(name="Some content without dataset")
-        foreign = testmodels.ContentWithForeignKeyToContentWithDataset.objects.create(
-            name="Whee", content_id=content.pk)
+        foreign = (testmodels.ContentWithForeignKeyToContentWithDataset
+                   .objects.create(
+                       name="Whee", content_id=content.pk))
 
         # Raises no exception
         self.assertTrue(foreign.content)
@@ -504,8 +506,9 @@ class ForeignKeyTest(TestCase):
         content = Content.objects.create(
             name="Some content with dataset",
             data_set=self.data_set1)
-        foreign = testmodels.ContentWithForeignKeyToContentWithDataset.objects.create(
-            name="Whee", content_id=content.pk)
+        foreign = (testmodels.ContentWithForeignKeyToContentWithDataset
+                   .objects.create(
+                       name="Whee", content_id=content.pk))
 
         # Raises no exception
         self.assertTrue(foreign.content)
@@ -514,9 +517,9 @@ class ForeignKeyTest(TestCase):
         content = Content.objects.create(
             name="Some content with dataset but no access",
             data_set=self.data_set2)
-        foreign = testmodels.ContentWithForeignKeyToContentWithDataset.objects.create(
-            name="Whee", content_id=content.pk)
+        foreign = (testmodels.ContentWithForeignKeyToContentWithDataset
+                   .objects.create(
+                       name="Whee", content_id=content.pk))
 
         self.assertRaises(
             Content.DoesNotExist, lambda: foreign.content)
-

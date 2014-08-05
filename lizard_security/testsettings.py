@@ -8,7 +8,7 @@ TEMPLATE_DEBUG = True
 SETTINGS_DIR = os.path.dirname(os.path.realpath(__file__))
 
 # BUILDOUT_DIR is for access to the "surrounding" buildout, for instance for
-# BUILDOUT_DIR/var/static files to give django-staticfiles a proper place
+# BUILDOUT_DIR/var/static files to give staticfiles a proper place
 # to place all collected static files.
 BUILDOUT_DIR = os.path.abspath(os.path.join(SETTINGS_DIR, '..'))
 
@@ -81,12 +81,14 @@ TEMPLATE_CONTEXT_PROCESSORS = (
 
 TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
 
-# Used for django-staticfiles (and for media files
+# Used for staticfiles (and for media files
 STATIC_URL = '/static_media/'
 ADMIN_MEDIA_PREFIX = STATIC_URL + 'admin/'
 MEDIA_URL = '/media/'
 STATIC_ROOT = os.path.join(BUILDOUT_DIR, 'var', 'static')
 MEDIA_ROOT = os.path.join(BUILDOUT_DIR, 'var', 'media')
+
+SECRET_KEY = "These are unit test settings so we don't need real secrecy"""
 
 try:
     # Import local settings that aren't stored in svn/git.

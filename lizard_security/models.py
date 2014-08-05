@@ -77,7 +77,7 @@ class UserGroup(models.Model):
             if not manager.is_staff:
                 text += ' (NOT STAFF YET)'
             if not manager.has_perm(
-                'lizard_security.change_usergroup'):
+                    'lizard_security.change_usergroup'):
                 text += ' (NO GLOBAL PERM TO CHANGE USERGROUP YET)'
             managers.append(text)
         return ', '.join(managers)

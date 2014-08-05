@@ -7,6 +7,7 @@ from lizard_security.manager import FilteredGeoManager
 from lizard_security.models import DataSet
 from lizard_security.admin import SecurityFilteredAdmin
 
+
 class ContentWithoutDataset(models.Model):
     """Test content.
 
@@ -63,8 +64,8 @@ class GeoContent(geo_models.Model):
                                 max_length=80,
                                 blank=True)
     data_set = geo_models.ForeignKey(DataSet,
-                                 null=True,
-                                 blank=True)
+                                     null=True,
+                                     blank=True)
     geometry = geo_models.GeometryField(srid=4326,
                                         null=True,
                                         blank=True)
