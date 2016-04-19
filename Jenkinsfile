@@ -1,4 +1,4 @@
-node("Docker on the jenkins master machine") {
+node("docker") {
    checkout scm
    sh "python bootstrap.py"
    sh "bin/buildout"
