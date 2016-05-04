@@ -7,5 +7,7 @@ node("nenskins14docker") {
    sh "bin/buildout"
 
    stage "Test"
-   sh "bin/test"
+   sh "bin/test | true"
+   step $class: 'JUnitResultArchiver', testResults: 'nosetests.xml'
+   publishHTML target: [reportDir: 'htmlcov', reportFiles: 'index.html', reportName: 'Coverage report']
 }
