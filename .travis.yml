@@ -1,12 +1,13 @@
+sudo: false
 language: python
 python:
   - 2.7
-before_install:
-  - sudo apt-get install spatialite-bin python-pysqlite2
+addons:
+  apt:
+    packages:
+    - spatialite-bin
+    - python-pysqlite2
 notifications:
-  irc:
-    channels: "irc.freenode.org#nens"
-    on_success: change
   email: false
 install:
   - deactivate
