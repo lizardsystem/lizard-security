@@ -8,6 +8,8 @@ Changelog of lizard-security
 - Added Jenkinsfile for automatic testing on the new
   https://jenkins.lizard.net
 
+- Removed travis.yml file for https://travis-ci.org
+
 
 0.7 (2014-08-05)
 ----------------
