@@ -1,4 +1,4 @@
-node("docker") {
+node("nenskins14docker") {
    stage "Checkout"
    checkout scm
 
