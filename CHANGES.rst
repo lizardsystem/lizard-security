@@ -5,7 +5,10 @@ Changelog of lizard-security
 0.8 (unreleased)
 ----------------
 
-- Nothing changed yet.
+- Added Jenkinsfile for automatic testing on the new
+  https://jenkins.lizard.net
+
+- Removed travis.yml file for https://travis-ci.org
 
 
 0.7 (2014-08-05)
